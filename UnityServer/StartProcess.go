@@ -1,7 +1,7 @@
 package UServer
 
 import (
-	"UAutoClient/Logs"
+	"MasterClient/Logs"
 	"os/exec"
 )
 
@@ -24,6 +24,6 @@ func StartAnalyze() {
 	cmd := exec.Command("cmd.exe", "/c", "start "+argu)
 	er := cmd.Run()
 	if er != nil { // 运行命令
-		Logs.Print(er)
+		Logs.Loggers().Print(er)
 	}
 }

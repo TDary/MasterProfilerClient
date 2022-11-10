@@ -19,11 +19,6 @@ func init() {
 	return
 }
 
-func Print(message any) {
-	loger.Print(message)
-}
-
-//使用于强制结束进程,到此会直接关闭服务进程
-func Error(message any) {
-	loger.Fatal(message)
+func Loggers() *log.Logger {
+	return loger
 }
