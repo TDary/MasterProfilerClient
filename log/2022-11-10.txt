@@ -1,0 +1,8 @@
+[logTool]2022/11/10 12:35:46 Init.go:14: unexpected end of JSON input
+[logTool]2022/11/10 12:36:36 Init.go:16: 初始化解析客户端配置成功----
+[logTool]2022/11/10 13:25:26 Init.go:16: 初始化解析客户端配置成功----
+[logTool]2022/11/10 13:33:16 Init.go:16: 初始化解析客户端配置成功----
+[logTool]2022/11/10 13:38:03 Init.go:16: 初始化解析客户端配置成功----
+[logTool]2022/11/10 13:38:03 StartProcess.go:53: 进程ID: 27600
+[logTool]2022/11/10 13:39:21 Init.go:16: 初始化解析客户端配置成功----
+[logTool]2022/11/10 13:39:21 StartProcess.go:53: 进程ID: 15692
