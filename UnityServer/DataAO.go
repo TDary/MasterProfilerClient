@@ -15,6 +15,7 @@ type Config struct {
 	UnityProjectPath string
 	MinioServerPath  string
 	MasterServerUrl  string
+	ClientUrl        string
 }
 
 type UnityConfig struct {

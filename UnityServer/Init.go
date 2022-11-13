@@ -3,7 +3,6 @@ package UnityServer
 import (
 	"MasterClient/Logs"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 )
 
@@ -15,5 +14,5 @@ func InitClient() {
 	}
 	Logs.Loggers().Print("初始化解析客户端配置成功----")
 	//测试是否反序列化成功
-	fmt.Print(config)
+	// fmt.Print(config)
 }

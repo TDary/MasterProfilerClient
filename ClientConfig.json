@@ -12,5 +12,6 @@
     ],
     "UnityProjectPath":"E:\\ProfilerProject",
     "MinioServerPath":"",
-    "MasterServerUrl" :"10.11.144.31:8201"
+    "MasterServerUrl" :"10.11.144.31:8201",
+    "ClientUrl":"10.11.145.15:888"
 }
