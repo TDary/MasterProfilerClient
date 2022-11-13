@@ -11,7 +11,13 @@ type AnalyzeData struct {
 
 type Config struct {
 	FilePath         string
-	UnityPath        []string
+	UnityPath        []UnityConfig
 	UnityProjectPath string
 	MinioServerPath  string
+	MasterServerUrl  string
+}
+
+type UnityConfig struct {
+	Version string
+	Path    string
 }

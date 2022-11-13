@@ -1,6 +1,16 @@
 {
     "FilePath":"E:\\TestFiles",
-    "UnityPath":["F:\\Unity2021.3.1f1\\WindowsEditor\\Unity.exe","F:\\Unity2021.3.9\\Editor\\Unity.exe"],
+    "UnityPath":[
+        {
+            "Version":"2021.3.1f1",
+            "Path":"F:\\Unity2021.3.1f1\\WindowsEditor\\Unity.exe"
+        },
+        {
+            "Version":"2021.3.9f1",
+            "Path":"F:\\Unity2021.3.9\\Editor\\Unity.exe"
+        }
+    ],
     "UnityProjectPath":"E:\\ProfilerProject",
-    "MinioServerPath":""
+    "MinioServerPath":"",
+    "MasterServerUrl" :"10.11.144.31:8201"
 }
