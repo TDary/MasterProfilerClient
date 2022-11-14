@@ -10,8 +10,29 @@
             "Path":"F:\\Unity2021.3.9\\Editor\\Unity.exe"
         }
     ],
-    "UnityProjectPath":"E:\\ProfilerProject",
-    "MinioServerPath":"",
+    "UnityProjectPath":[
+        {
+            "Path" : "E:\\ProfilerProject\\Analyze_0",
+            "Numb":1,
+            "State" : false
+        },
+        {
+            "Path" : "E:\\ProfilerProject\\Analyze_1",
+            "Numb":2,
+            "State" : false
+        },
+        {
+            "Path" : "E:\\ProfilerProject\\Analyze_2",
+            "Numb":3,
+            "State" : false
+        },
+        {
+            "Path" : "E:\\ProfilerProject\\Analyze_3",
+            "Numb":4,
+            "State" : false
+        }
+    ],
+    "MinioServerPath":"10.11.145.15:9001",
     "MasterServerUrl" :"10.11.144.31:8201",
     "ClientUrl":"10.11.145.15:888"
 }

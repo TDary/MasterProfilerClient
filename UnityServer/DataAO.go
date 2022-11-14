@@ -1,6 +1,17 @@
 package UnityServer
 
-var config Config
+var config Config        //客户端解析配置
+var handCase HandingCase //正在进行解析的案例记录
+
+type HandingCase struct {
+	Case []OneCase
+}
+
+type OneCase struct {
+	UUID    string
+	RawFile string
+	Numb    int //对应解析工程的Numb
+}
 
 type AnalyzeData struct {
 	UUID          string
@@ -12,10 +23,16 @@ type AnalyzeData struct {
 type Config struct {
 	FilePath         string
 	UnityPath        []UnityConfig
-	UnityProjectPath string
+	UnityProjectPath []UnityProject
 	MinioServerPath  string
 	MasterServerUrl  string
 	ClientUrl        string
+}
+
+type UnityProject struct {
+	Path  string
+	Numb  int
+	State bool
 }
 
 type UnityConfig struct {

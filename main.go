@@ -2,15 +2,13 @@
 package main
 
 import (
-	"MasterClient/HttpServer"
-	"MasterClient/Minio"
+	"MasterClient/Logs"
 	"MasterClient/UnityServer"
-	"fmt"
 )
 
 func main() {
-	fmt.Print("欢迎使用解析服务器客户端！！！")
+	Logs.Loggers().Print("欢迎使用解析服务器客户端！！！")
 	UnityServer.InitClient()
-	Minio.InitMinio()
-	HttpServer.ListenAndServer("")
+	// Minio.InitMinio()
+	// HttpServer.ListenAndServer("")
 }
