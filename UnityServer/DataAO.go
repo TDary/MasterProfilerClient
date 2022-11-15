@@ -25,8 +25,8 @@ type Config struct {
 	UnityPath        []UnityConfig
 	UnityProjectPath []UnityProject
 	MinioServerPath  string
-	MasterServerUrl  string
-	ClientUrl        string
+	MasterServerUrl  ServerConfig
+	ClientUrl        ServerConfig
 }
 
 type UnityProject struct {
@@ -38,4 +38,9 @@ type UnityProject struct {
 type UnityConfig struct {
 	Version string
 	Path    string
+}
+
+type ServerConfig struct {
+	Ip   string
+	Port string
 }

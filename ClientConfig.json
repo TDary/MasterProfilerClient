@@ -33,6 +33,13 @@
         }
     ],
     "MinioServerPath":"10.11.145.15:9001",
-    "MasterServerUrl" :"10.11.144.31:6950",
-    "ClientUrl":"10.11.145.15:7950"
+    "MasterServerUrl" :{
+        "Ip":"10.11.144.31",
+        "Port":6950
+    },
+
+    "ClientUrl":{
+        "Ip":"10.11.145.15",
+        "Port":7950
+    }
 }
