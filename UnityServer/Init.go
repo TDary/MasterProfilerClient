@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 )
 
-func InitClient() {
+func InitClient() string {
 	var data, _ = ioutil.ReadFile("./ClientConfig.json")
 	var err = json.Unmarshal(data, &config)
 	if err != nil {
@@ -18,6 +18,7 @@ func InitClient() {
 	// fmt.Print(config)
 	//为了避免死机重启后有任务还在运行卡流程，加入一个启动服务器检测的功能
 	CheckCaseState()
+	return config.ClientUrl
 }
 
 func CheckCaseState() {
@@ -44,8 +45,8 @@ func CheckCaseState() {
 					Logs.Loggers().Print("转换json失败----", err)
 				}
 				Tools.WriteHandFile(string(str))
-			} else { //解析失败，通过回传给中枢服务器请求重新解析
-				//TODO:请求回传消息
+			} else { //解析失败，直接发送回传消息重新解析
+				SendReProfiler(val.RawFile, val.UUID)
 			}
 		} else {
 			continue
