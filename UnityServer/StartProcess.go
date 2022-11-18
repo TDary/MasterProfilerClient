@@ -108,13 +108,15 @@ func OpenUnityProject(num int) {
 
 //检查Unity版本
 func GetUnityVerison(data AnalyzeData) string {
-	subVer := data.UnityVersion
-	subVer = subVer[:6]
-	for _, val := range config.UnityPath {
-		Version := val.Version
-		Version = Version[:6]
-		if subVer == Version { //判断前面的字符版本大版本2021.3即可
-			return val.Path
+	if data.UnityVersion != "" {
+		subVer := data.UnityVersion
+		subVer = subVer[:6]
+		for _, val := range config.UnityPath {
+			Version := val.Version
+			Version = Version[:6]
+			if subVer == Version { //判断前面的字符版本大版本2021.3即可
+				return val.Path
+			}
 		}
 	}
 	return ""

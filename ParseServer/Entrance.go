@@ -31,7 +31,7 @@ func Analyze(data string) {
 func CheckProcessState(pidID int, getdata UnityServer.AnalyzeData, csvPath string) {
 	for true {
 		if CheckPid(pidID, getdata, csvPath) {
-			time.Sleep(5 * time.Second)
+			time.Sleep(10 * time.Second)
 		} else {
 			break
 		}
@@ -59,10 +59,6 @@ func CheckPid(pidID int, getdata UnityServer.AnalyzeData, csvpath string) bool {
 
 //将回传的http消息进行处理
 func ParseData(data string, gdata UnityServer.AnalyzeData) UnityServer.AnalyzeData {
-	//在此判断是否是重新解析发送过来的消息
-	// if strings.Contains(data, "") {
-
-	// }
 	current := strings.Split(data, "&")
 	for i := 0; i < len(current); i++ {
 		if strings.Contains(current[i], "uuid") {
