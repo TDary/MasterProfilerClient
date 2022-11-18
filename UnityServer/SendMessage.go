@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -90,10 +91,10 @@ func SendStartMess() {
 			Logs.Loggers().Print(err)
 		}
 	}
-	if result.String() == "ok" {
-		Logs.Loggers().Print("中枢服务器接收到开启消息----")
+	if strings.Contains(result.String(), "success") {
+		Logs.Loggers().Print("中枢服务器接收到开启消息----", result.String())
 	} else {
-		Logs.Loggers().Print("中枢服务器未成功接收到消息----")
+		Logs.Loggers().Print("中枢服务器未成功接收到消息----", result.String())
 		return
 	}
 }

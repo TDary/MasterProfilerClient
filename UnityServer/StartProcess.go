@@ -29,7 +29,7 @@ func StartAnalyze(data AnalyzeData) (int, string) {
 		Logs.Loggers().Print("无可用Unity工程----")
 		return -1, csvPath
 	}
-	argu := "-quit -batchmode -nographics "
+	argu := " -quit -batchmode -nographics "
 	argu = argu + "-projectPath " + UnityPjPath + " "
 	argu = argu + "-executeMethod Entrance.EntranceParseBegin "
 	argu = argu + "-logFile " + logPath + " "

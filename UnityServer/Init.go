@@ -18,7 +18,8 @@ func InitClient() string {
 	// fmt.Print(config)
 	//为了避免死机重启后有任务还在运行卡流程，加入一个启动服务器检测的功能
 	CheckCaseState()
-	PingMaster()
+	//启动客户端解析需要请求一次master服务器
+	SendStartMess()
 	address := config.ClientUrl.Ip + ":" + config.ClientUrl.Port
 	return address
 }
@@ -55,9 +56,4 @@ func CheckCaseState() {
 			continue
 		}
 	}
-}
-
-//启动客户端解析需要请求一次master服务器
-func PingMaster() {
-
 }
