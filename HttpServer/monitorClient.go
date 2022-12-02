@@ -1,6 +1,7 @@
 package HttpServer
 
 import (
+	"MasterClient/Logs"
 	"MasterClient/ParseServer"
 	"encoding/json"
 	"net/http"
@@ -19,6 +20,7 @@ func DealReceivedMessage(msg string) int {
 	if strings.Contains(msg, "analyze") {
 		beginMsg := strings.Split(msg, "?")[1]
 		go ParseServer.Analyze(beginMsg)
+		Logs.Loggers().Print("接收到开始解析的消息----")
 		return 200
 	} else if strings.Contains(msg, "mergesuccess") {
 		sucMsg := strings.Split(msg, "?")[1]

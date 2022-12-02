@@ -11,7 +11,7 @@ import (
 
 func GetSucessData(rawfile string, uuid string, csvpath string) {
 	request_Url := "http://" + config.MasterServerUrl.Ip + ":" + config.MasterServerUrl.Port +
-		"/SuccessProfiler" + "?" + "uuid=" + uuid + "&rawfile=" + rawfile + "&csvpath=" + csvpath
+		"/SuccessProfiler" + "?" + "uuid=" + uuid + "&rawfile=" + rawfile + "&csvpath=" + csvpath + "&ip=" + config.ClientUrl.Ip
 	//超时时间：5秒
 	client := &http.Client{Timeout: 5 * time.Second}
 	resp, err := client.Get(request_Url)
@@ -31,7 +31,7 @@ func GetSucessData(rawfile string, uuid string, csvpath string) {
 			Logs.Loggers().Print(err)
 		}
 	}
-	if result.String() == "ok" {
+	if strings.Contains(result.String(), "ok") {
 		Logs.Loggers().Print("中枢服务器接收到解析成功消息----")
 	} else {
 		Logs.Loggers().Print("中枢服务器未成功接收到消息----")
@@ -61,7 +61,7 @@ func SendReProfiler(rawfile string, uuid string) {
 			Logs.Loggers().Print(err)
 		}
 	}
-	if result.String() == "ok" {
+	if strings.Contains(result.String(), "success") {
 		Logs.Loggers().Print("中枢服务器接收到重新解析消息----")
 	} else {
 		Logs.Loggers().Print("中枢服务器未成功接收到消息----")

@@ -14,7 +14,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	loger = log.New(logFile, "[logTool]", log.LstdFlags|log.Lshortfile|log.LUTC)
+	loger = log.New(logFile, "[logTool]", log.Ltime|log.Lshortfile)
 	// 将文件设置为loger作为输出
 	return
 }

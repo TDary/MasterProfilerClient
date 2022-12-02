@@ -19,7 +19,7 @@ func Analyze(data string) {
 		processID, csvPath := UnityServer.StartAnalyze(getdata)
 		CheckProcessState(processID, getdata, csvPath) //监控解析进程
 		//完成解析
-		//去除掉成功解析的文件数据
+		//去除掉成功解析的HandingCase文件数据
 		UnityServer.SuccessAnalyze(getdata)
 		//完成解析消息回传发送准备
 		UnityServer.GetSucessData(getdata.RawFile, getdata.UUID, csvPath)
@@ -44,17 +44,15 @@ func CheckPid(pidID int, getdata UnityServer.AnalyzeData, csvpath string) bool {
 	output, _ := cmd.Output()
 	if output != nil {
 		Logs.Loggers().Print("进程：" + pid + "解析仍在进行中----")
-		return true
-	} else {
-		Logs.Loggers().Print("进程：" + pid + "解析完成，开始进程检测----")
+		Logs.Loggers().Print("任务：检测----")
 		//检查文件是否已经全部完成
 		var data, _ = ioutil.ReadFile(csvpath)
 		if data != nil {
 			Logs.Loggers().Print("csv文件已解析成功----")
 			return false
 		}
-		return false
 	}
+	return true
 }
 
 //将回传的http消息进行处理

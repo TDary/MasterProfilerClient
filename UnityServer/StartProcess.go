@@ -42,7 +42,7 @@ func StartAnalyze(data AnalyzeData) (int, string) {
 	argu = argu + "-shieldSwitch " + shield + " "
 	argu = Unity_Name + argu
 	cmd := exec.Command("cmd.exe", "/c", "start "+argu)
-	er := cmd.Run()
+	er := cmd.Start()
 	if er != nil { // 运行命令
 		Logs.Loggers().Print(er)
 	}
