@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-//开始启动解析前的准备工作
+// 开始启动解析前的准备工作
 func Analyze(data string) {
 	var getdata UnityServer.AnalyzeData
 	getdata = ParseData(data, getdata)
@@ -19,7 +19,6 @@ func Analyze(data string) {
 		processID, csvPath := UnityServer.StartAnalyze(getdata)
 		CheckProcessState(processID, getdata, csvPath) //监控解析进程
 		//完成解析
-		//去除掉成功解析的HandingCase文件数据
 		UnityServer.SuccessAnalyze(getdata)
 		//完成解析消息回传发送准备
 		UnityServer.GetSucessData(getdata.RawFile, getdata.UUID, csvPath)
@@ -55,7 +54,7 @@ func CheckPid(pidID int, getdata UnityServer.AnalyzeData, csvpath string) bool {
 	return true
 }
 
-//将回传的http消息进行处理
+// 将回传的http消息进行处理
 func ParseData(data string, gdata UnityServer.AnalyzeData) UnityServer.AnalyzeData {
 	current := strings.Split(data, "&")
 	for i := 0; i < len(current); i++ {

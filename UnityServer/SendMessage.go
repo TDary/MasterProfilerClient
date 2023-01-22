@@ -76,7 +76,7 @@ func SendStartMess() {
 	client := &http.Client{Timeout: 5 * time.Second}
 	resp, err := client.Get(request_Url)
 	if err != nil {
-		Logs.Loggers().Print(err)
+		Logs.Loggers().Print("该地址不存在----", err)
 		return
 	}
 	defer resp.Body.Close()

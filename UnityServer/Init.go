@@ -2,9 +2,11 @@ package UnityServer
 
 import (
 	"MasterClient/Logs"
-	"MasterClient/Tools"
+	"bufio"
 	"encoding/json"
+	"io"
 	"io/ioutil"
+	"os"
 )
 
 func InitClient() string {
@@ -20,40 +22,66 @@ func InitClient() string {
 	CheckCaseState()
 	//启动客户端解析需要请求一次master服务器
 	SendStartMess()
+	//检查Unity工程是否存在等
+	CheckUnityProject()
 	address := config.ClientUrl.Ip + ":" + config.ClientUrl.Port
 	return address
 }
 
-//检查有没有宕机重启的情况
+// 检查有没有宕机重启的情况
 func CheckCaseState() {
-	var data, _ = ioutil.ReadFile("./HandingCase.json")
-	var err = json.Unmarshal(data, &handCase)
+	//检查有没有解析的队列
+	//打开文件
+	Logs.Loggers().Print("正在检查是否有未完成解析的任务----")
+	var newQue []string
+	file, err := os.Open("./Analyzing.txt")
 	if err != nil {
-		Logs.Loggers().Fatal(err)
+		Logs.Loggers().Println("文件打开失败 = ", err)
 	}
-	Logs.Loggers().Print("获取文件数据成功,开始检测服务器状态----")
-	// fmt.Print(handCase)   //测试是否能够获取
-	//检查是否有还在进行解析的任务
-	for _, val := range handCase.Case {
-		if val.UUID != "" {
-			resfilePath := config.FilePath + "/" + val.UUID + "/" + val.RawFile
-			var data, _ = ioutil.ReadFile(resfilePath)
-			if data != nil {
-				Logs.Loggers().Print("UUID：" + val.UUID + "RawFile:" + val.RawFile + "已经解析完毕，正在准备返回解析工程")
-				val.UUID = ""
-				val.RawFile = ""
-				OpenUnityProject(val.Numb)
-				val.Numb = 0
-				str, err := json.Marshal(handCase)
-				if err != nil {
-					Logs.Loggers().Print("转换json失败----", err)
-				}
-				Tools.WriteHandFile(string(str))
-			} else { //解析失败，直接发送回传消息重新解析
-				SendReProfiler(val.RawFile, val.UUID)
-			}
-		} else {
-			continue
+	//及时关闭 file 句柄，否则会有内存泄漏
+	defer file.Close()
+	//创建一个 *Reader ， 是带缓冲的
+	reader := bufio.NewReader(file)
+	for {
+		str, err := reader.ReadString('\n') //读到一个换行就结束
+		if err == io.EOF {                  //io.EOF 表示文件的末尾
+			break
+		} else if str != "" {
+			//还有解析中的任务,直接发送回传消息重新解析\
+			newQue = append(newQue, str)
 		}
 	}
+	if len(newQue) != 0 {
+		for i := 0; i < len(newQue); i++ {
+			var getdata AnalyzeData
+			err = json.Unmarshal([]byte(newQue[i]), &getdata)
+			if err != nil {
+				Logs.Loggers().Print("json转换失败----")
+			}
+			SendReProfiler(getdata.RawFile, getdata.UUID) //发送失败解析的任务
+		}
+	}
+	//写入文件时，使用带缓存的 *Writer
+	write := bufio.NewWriter(file)
+	//重新写入空白文件
+	write.WriteString("")
+	//刷新一下啊
+	write.Flush()
+}
+
+func CheckUnityProject() {
+	Logs.Loggers().Print("正在检查Unity解析模板以及Unity程序是否存在----")
+	for i := 0; i < len(config.UnityProjectPath); i++ {
+		_, err := os.Stat(config.UnityProjectPath[i].Path)
+		if err != nil {
+			Logs.Loggers().Fatal("当前解析模板不存在：", config.UnityProjectPath[i].Path)
+		}
+	}
+	for i := 0; i < len(config.UnityPath); i++ {
+		_, err := os.Stat(config.UnityPath[i].Path)
+		if err != nil {
+			Logs.Loggers().Fatal("当前解析程序不存在：", config.UnityProjectPath[i].Path)
+		}
+	}
+	Logs.Loggers().Print("检查完毕，状态完好!!!")
 }

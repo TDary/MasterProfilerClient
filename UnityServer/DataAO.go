@@ -1,12 +1,9 @@
 package UnityServer
 
-var config Config        //客户端解析配置
-var handCase HandingCase //正在进行解析的案例记录
+import "sync"
 
-type HandingCase struct {
-	Case []OneCase
-}
-
+var config Config  //客户端解析配置
+var lck sync.Mutex //互斥锁
 type OneCase struct {
 	UUID    string
 	RawFile string
@@ -18,6 +15,7 @@ type AnalyzeData struct {
 	RawFile       string
 	UnityVersion  string
 	AnalyzeBucket string
+	AnalyzeNum    int
 }
 
 type Config struct {
@@ -27,6 +25,7 @@ type Config struct {
 	MinioServerPath  string
 	MasterServerUrl  ServerConfig
 	ClientUrl        ServerConfig
+	lock             sync.Mutex
 }
 
 type UnityProject struct {
