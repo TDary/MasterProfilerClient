@@ -4,8 +4,10 @@ import (
 	"MasterClient/Logs"
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
+	"net"
 	"os"
 )
 
@@ -16,8 +18,21 @@ func InitClient() string {
 		Logs.Loggers().Fatal(err)
 	}
 	Logs.Loggers().Print("初始化解析客户端配置成功----")
-	//测试是否反序列化成功
-	// fmt.Print(config)
+	//获取本地IP
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		Logs.Loggers().Println(err)
+		return ""
+	}
+	for _, address := range addrs {
+		// 检查ip地址判断是否回环地址
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				fmt.Println(ipnet.IP.String())
+			}
+		}
+	}
+
 	//为了避免死机重启后有任务还在运行卡流程，加入一个启动服务器检测的功能
 	CheckCaseState()
 	//启动客户端解析需要请求一次master服务器
