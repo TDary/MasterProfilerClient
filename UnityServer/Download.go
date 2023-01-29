@@ -17,7 +17,7 @@ func DownLoadFile(getdata AnalyzeData) bool {
 	bucket := getdata.AnalyzeBucket
 	isSuccess := Minio.DownLoadFile(fileName, filePath, "", bucket)
 	if isSuccess {
-		return true
+		return isSuccess
 	}
 	return false
 }
