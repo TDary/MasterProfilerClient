@@ -66,9 +66,8 @@ func StartAnalyze(data AnalyzeData) int {
 	if er != nil { // 运行命令
 		Logs.Loggers().Print(er.Error())
 	}
+	SuccessBegin(data, num)
 	return num
-	// SuccessBegin(data, num)
-	//TODO:使用序列化文件 二进制文件进行保存正在解析中的任务
 }
 
 // 占用一个Unity工程

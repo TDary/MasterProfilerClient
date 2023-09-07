@@ -34,20 +34,23 @@ func Analyze(data string) {
 func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
 	var count int
 	for {
-		time.Sleep(10 * time.Second)
+		time.Sleep(5 * time.Second)
 		if CheckAnalyzeState(getdata) == "success" {
 			Logs.Loggers().Print("UUID:" + getdata.UUID + ",rawFile:" + getdata.RawFile + "解析成功----")
 			UnityServer.RleaseUnityProject(id)
+			UnityServer.SuccessAnalyze(getdata)
 			break
 		} else if CheckAnalyzeState(getdata) == "failed" {
 			Logs.Loggers().Print("UUID:" + getdata.UUID + ",rawFile:" + getdata.RawFile + "解析失败----")
 			UnityServer.RleaseUnityProject(id)
+			UnityServer.SuccessAnalyze(getdata)
 			break
 		} else {
 			//超过一定的等待时间即代表着已经解析出问题了
-			if count >= 12 {
+			if count >= 24 {
 				//释放unity解析池组
 				UnityServer.RleaseUnityProject(id)
+				UnityServer.SuccessAnalyze(getdata)
 				break
 			}
 		}
