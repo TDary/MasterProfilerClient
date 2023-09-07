@@ -13,22 +13,22 @@
     "UnityProjectPath":[
         {
             "Path" : "E:\\ProfilerProject\\Analyze_0",
-            "Numb":1,
+            "Numb":0,
             "State" : true
         },
         {
             "Path" : "E:\\ProfilerProject\\Analyze_1",
-            "Numb":2,
+            "Numb":1,
             "State" : true
         },
         {
             "Path" : "E:\\ProfilerProject\\Analyze_2",
-            "Numb":3,
+            "Numb":2,
             "State" : true
         },
         {
             "Path" : "E:\\ProfilerProject\\Analyze_3",
-            "Numb":4,
+            "Numb":3,
             "State" : true
         }
     ],

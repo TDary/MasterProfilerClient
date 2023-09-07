@@ -9,9 +9,9 @@ import (
 	"time"
 )
 
-func GetSucessData(rawfile string, uuid string, csvpath string) {
+func GetSucessData(rawfile string, uuid string) {
 	request_Url := "http://" + config.MasterServerUrl.Ip + ":" + config.MasterServerUrl.Port +
-		"/SuccessProfiler" + "?" + "uuid=" + uuid + "&rawfile=" + rawfile + "&csvpath=" + csvpath + "&ip=" + config.ClientUrl.Ip
+		"/SuccessProfiler" + "?" + "uuid=" + uuid + "&rawfile=" + rawfile + "&ip=" + config.ClientUrl.Ip
 	//超时时间：5秒
 	client := &http.Client{Timeout: 5 * time.Second}
 	resp, err := client.Get(request_Url)

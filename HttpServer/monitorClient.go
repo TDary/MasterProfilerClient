@@ -10,7 +10,7 @@ import (
 
 func ListenAndServer(address string) {
 	http.HandleFunc("/analyze", RequestProfiler)
-	http.HandleFunc("/mergesuccess", SuccessMerge)
+	http.HandleFunc("/stop", SuccessAnalyze)
 	//Http监听函数
 	http.ListenAndServe(address, nil)
 }
@@ -18,13 +18,14 @@ func ListenAndServer(address string) {
 //Http请求处理模块
 func DealReceivedMessage(msg string) int {
 	if strings.Contains(msg, "analyze") {
-		beginMsg := strings.Split(msg, "?")[1]
-		go ParseServer.Analyze(beginMsg)
+		BeginMsg := strings.Split(msg, "?")[1]
+		go ParseServer.Analyze(BeginMsg)
 		Logs.Loggers().Print("接收到开始解析的消息----")
 		return 200
-	} else if strings.Contains(msg, "mergesuccess") {
-		sucMsg := strings.Split(msg, "?")[1]
-		go ParseServer.AcceptData(sucMsg)
+	} else if strings.Contains(msg, "stop") {
+		SuccessMsg := strings.Split(msg, "?")[1]
+		go ParseServer.AnalyzeSuccess(SuccessMsg)
+		Logs.Loggers().Print("接收到解析完毕的消息----")
 		return 200
 	} else {
 		return 400
@@ -38,7 +39,7 @@ func RequestProfiler(w http.ResponseWriter, r *http.Request) {
 	RequestUrlData := r.URL.String()
 	resMes := DealReceivedMessage(RequestUrlData)
 	if resMes == 200 {
-		resData = "ok"
+		resData = "{'code':200,'msg':'ok'}"
 	} else {
 		resData = "Request Fail"
 	}
@@ -47,13 +48,13 @@ func RequestProfiler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonByte)
 }
 
-//接受合并完成消息，删除对应的文件
-func SuccessMerge(w http.ResponseWriter, r *http.Request) {
+//接受解析完成消息
+func SuccessAnalyze(w http.ResponseWriter, r *http.Request) {
 	var resData string
 	RequestUrlData := r.URL.String()
 	resMes := DealReceivedMessage(RequestUrlData)
 	if resMes == 200 {
-		resData = "ok"
+		resData = "{'code':200,'msg':'ok receive'}"
 	} else {
 		resData = "Request Fail"
 	}

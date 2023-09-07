@@ -10,12 +10,20 @@ type OneCase struct {
 	Numb    int //对应解析工程的Numb
 }
 
+type AnalyzeState struct {
+	UUID        string
+	RawFile     string
+	AnalyzeType string
+	State       string
+}
+
 type AnalyzeData struct {
 	UUID          string
 	RawFile       string
 	UnityVersion  string
 	AnalyzeBucket string
 	AnalyzeNum    int
+	AnalyzeType   string
 }
 
 type Config struct {

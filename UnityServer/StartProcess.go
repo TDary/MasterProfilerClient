@@ -3,49 +3,72 @@ package UnityServer
 import (
 	"MasterClient/Logs"
 	"os/exec"
+	"strings"
+	"syscall"
 )
 
 // 启动解析进程
-func StartAnalyze(data AnalyzeData) (int, string) {
+func StartAnalyze(data AnalyzeData) int {
 	logPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + ".log"
 	rawPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile
 	csvPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + ".csv"
-	funjsonPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + "_fun.json"
-	funRowPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + "_funrow.json"
-	renderRowPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + "_renderrow.json"
-	funhashPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + "_funhash.json"
+	funPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + "_fun.bin"
+	funRowPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + "_funrow.bin"
+	renderRowPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + "_renderrow.bin"
+	funhashPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + "_funhash.bin"
+	analyzeType := data.AnalyzeType
 	shield := "false"
 	//判断unity版本然后进行选取
 	Unity_Name := GetUnityVerison(data)
 	if Unity_Name == "" {
 		Logs.Loggers().Print("无可使用Unity版本----")
-		return -1, csvPath
+		return -1
 	}
 	//寻找可用的Unity工程进行解析
 	UnityPjPath, num := GetUnityProject()
 	if UnityPjPath == "" {
 		Logs.Loggers().Print("无可用Unity工程----")
-		return -1, csvPath
+		return -1
 	}
-	argu := " -quit -batchmode -nographics "
-	argu = argu + "-projectPath " + UnityPjPath + " "
-	argu = argu + "-executeMethod Entrance.EntranceParseBegin "
-	argu = argu + "-logFile " + logPath + " "
-	argu = argu + "-rawPath " + rawPath + " "
-	argu = argu + "-csvPath " + csvPath + " "
-	argu = argu + "-funjsonPath " + funjsonPath + " "
-	argu = argu + "-funrowjsonPath " + funRowPath + " "
-	argu = argu + "-funrenderrowjsonPath " + renderRowPath + " "
-	argu = argu + "-funhashPath " + funhashPath + " "
-	argu = argu + "-shieldSwitch " + shield + " "
-	argu = Unity_Name + argu
-	cmd := exec.Command("cmd.exe", "/c", "start "+argu)
+	var Startargs strings.Builder
+	Startargs.WriteString(Unity_Name)
+	Startargs.WriteString(" -quit -batchmode -nographics ")
+	Startargs.WriteString("-projectPath ")
+	Startargs.WriteString(UnityPjPath)
+	Startargs.WriteString(" -executeMethod Entrance.EntranceParseBegin ")
+	Startargs.WriteString("-logFile ")
+	Startargs.WriteString(logPath)
+	Startargs.WriteString(" -rawPath ")
+	Startargs.WriteString(rawPath)
+	Startargs.WriteString(" -csvPath ")
+	Startargs.WriteString(csvPath)
+	Startargs.WriteString(" -funPath ")
+	Startargs.WriteString(funPath)
+	Startargs.WriteString(" -funrowPath ")
+	Startargs.WriteString(funRowPath)
+	Startargs.WriteString(" -funrenderrowPath ")
+	Startargs.WriteString(renderRowPath)
+	Startargs.WriteString(" -funhashPath ")
+	Startargs.WriteString(funhashPath)
+	Startargs.WriteString(" -analyzeType ")
+	Startargs.WriteString(analyzeType)
+	Startargs.WriteString(" -shieldSwitch ")
+	Startargs.WriteString(shield)
+	Startargs.WriteString(" -UUID ")
+	Startargs.WriteString(data.UUID)
+	Startargs.WriteString(" -ServerUrl ")
+	Startargs.WriteString(config.ClientUrl.Ip)
+	Startargs.WriteString(":")
+	Startargs.WriteString(config.ClientUrl.Port)
+	cmd := exec.Command("cmd.exe", "/c", "start "+Startargs.String())
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	er := cmd.Start()
 	if er != nil { // 运行命令
-		Logs.Loggers().Print(er)
+		Logs.Loggers().Print(er.Error())
 	}
-	SuccessBegin(data, num)
-	return cmd.Process.Pid, csvPath
+	return num
+	// SuccessBegin(data, num)
+	//TODO:使用序列化文件 二进制文件进行保存正在解析中的任务
 }
 
 // 占用一个Unity工程
@@ -58,7 +81,7 @@ func GetUnityProject() (string, int) {
 			return val.Path, val.Numb
 		}
 	}
-	return "", 0
+	return "", -1
 }
 
 // 释放Unity工程使用状态

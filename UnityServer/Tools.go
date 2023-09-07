@@ -19,6 +19,7 @@ func CheckUnityVersion(data AnalyzeData) string {
 
 // 成功启动的话将进行写入进行中队列，独特的队列
 func SuccessBegin(data AnalyzeData, num int) {
+	//todo:将其保存为二进制序列化文件
 	data.AnalyzeNum = num
 	transinfo := Tools.StructToMap(data)
 	infodata := Tools.MapToString(transinfo)
@@ -38,7 +39,7 @@ func SuccessBegin(data AnalyzeData, num int) {
 	write.Flush()
 }
 
-// 成功解析完毕的话去除文件中进行的
+// 解析完毕的话去除文件中进行的
 func SuccessAnalyze(data AnalyzeData) {
 	transinfo := Tools.StructToMap(data)
 	infodata := Tools.MapToString(transinfo)
