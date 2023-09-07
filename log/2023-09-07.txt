@@ -10,3 +10,44 @@
 [logTool]21:39:04 Entrance.go:39: UUID:testuu1,rawFile:275028.raw解析成功----
 [logTool]21:39:04 Entrance.go:24: 解析流程完毕----
 [logTool]21:39:06 SendMessage.go:19: Get "http://10.11.144.31:6950/SuccessProfiler?uuid=testuu1&rawfile=275028.raw&ip=10.11.144.31": dial tcp 10.11.144.31:6950: connectex: No connection could be made because the target machine actively refused it.
+[logTool]23:08:12 main.go:11: 欢迎使用解析服务器客户端！！！
+[logTool]23:08:12 Init.go:18: 初始化解析客户端配置成功----
+[logTool]23:08:12 Init.go:33: 正在检查是否有未完成解析的任务----
+[logTool]23:08:14 SendMessage.go:79: 该地址不存在----Get "http://10.11.144.31:6950/RquestClient?ip=10.11.144.31": dial tcp 10.11.144.31:6950: connectex: No connection could be made because the target machine actively refused it.
+[logTool]23:08:14 Init.go:71: 正在检查Unity解析模板以及Unity程序是否存在----
+[logTool]23:08:14 Init.go:84: 检查完毕，状态完好!!!
+[logTool]23:08:38 monitorClient.go:23: 接收到开始解析的消息----
+[logTool]23:08:38 Download.go:13: 已存在源文件:275028.raw
+[logTool]23:09:30 monitorClient.go:28: 接收到解析完毕的消息----
+[logTool]23:09:33 Entrance.go:39: UUID:testuu1,rawFile:275028.raw解析成功----
+[logTool]23:09:33 Tools.go:42: gob: attempt to decode into a non-pointer
+[logTool]23:09:33 Entrance.go:24: 解析流程完毕----
+[logTool]23:09:33 Tools.go:42: gob: attempt to decode into a non-pointer
+[logTool]23:09:35 SendMessage.go:19: Get "http://10.11.144.31:6950/SuccessProfiler?uuid=testuu1&rawfile=275028.raw&ip=10.11.144.31": dial tcp 10.11.144.31:6950: connectex: No connection could be made because the target machine actively refused it.
+[logTool]23:12:16 main.go:11: 欢迎使用解析服务器客户端！！！
+[logTool]23:12:16 Init.go:18: 初始化解析客户端配置成功----
+[logTool]23:12:16 Init.go:33: 正在检查是否有未完成解析的任务----
+[logTool]23:12:16 Init.go:37: 文件打开失败 =  open ./Analyzing.txt: The system cannot find the file specified.
+[logTool]23:13:44 main.go:11: 欢迎使用解析服务器客户端！！！
+[logTool]23:13:44 Init.go:18: 初始化解析客户端配置成功----
+[logTool]23:13:46 SendMessage.go:79: 该地址不存在----Get "http://10.11.144.31:6950/RquestClient?ip=10.11.144.31": dial tcp 10.11.144.31:6950: connectex: No connection could be made because the target machine actively refused it.
+[logTool]23:13:46 Init.go:72: 正在检查Unity解析模板以及Unity程序是否存在----
+[logTool]23:13:46 Init.go:85: 检查完毕，状态完好!!!
+[logTool]23:14:00 monitorClient.go:23: 接收到开始解析的消息----
+[logTool]23:14:00 Download.go:13: 已存在源文件:275028.raw
+[logTool]23:14:51 monitorClient.go:28: 接收到解析完毕的消息----
+[logTool]23:14:55 Entrance.go:39: UUID:testuu1,rawFile:275028.raw解析成功----
+[logTool]23:14:55 Entrance.go:24: 解析流程完毕----
+[logTool]23:14:55 Tools.go:42: open ./analyzing/0.gob: The system cannot find the file specified.
+[logTool]23:14:57 SendMessage.go:19: Get "http://10.11.144.31:6950/SuccessProfiler?uuid=testuu1&rawfile=275028.raw&ip=10.11.144.31": dial tcp 10.11.144.31:6950: connectex: No connection could be made because the target machine actively refused it.
+[logTool]23:21:50 main.go:11: 欢迎使用解析服务器客户端！！！
+[logTool]23:21:50 Init.go:18: 初始化解析客户端配置成功----
+[logTool]23:21:52 SendMessage.go:79: 该地址不存在----Get "http://10.11.144.31:6950/RquestClient?ip=10.11.144.31": dial tcp 10.11.144.31:6950: connectex: No connection could be made because the target machine actively refused it.
+[logTool]23:21:52 Init.go:43: 正在检查Unity解析模板以及Unity程序是否存在----
+[logTool]23:21:52 Init.go:56: 检查完毕，状态完好!!!
+[logTool]23:22:10 main.go:11: 欢迎使用解析服务器客户端！！！
+[logTool]23:22:10 Init.go:18: 初始化解析客户端配置成功----
+[logTool]23:22:10 Init.go:33: 正在检查是否有未完成解析的任务----
+[logTool]23:22:12 SendMessage.go:79: 该地址不存在----Get "http://10.11.144.31:6950/RquestClient?ip=10.11.144.31": dial tcp 10.11.144.31:6950: connectex: No connection could be made because the target machine actively refused it.
+[logTool]23:22:12 Init.go:43: 正在检查Unity解析模板以及Unity程序是否存在----
+[logTool]23:22:12 Init.go:56: 检查完毕，状态完好!!!

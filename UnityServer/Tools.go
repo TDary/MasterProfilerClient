@@ -37,7 +37,7 @@ func SuccessAnalyze(data AnalyzeData) {
 	var getdata AnalyzeData
 	currentNum := strconv.Itoa(data.AnalyzeNum)
 	getFile := "./analyzing" + "/" + currentNum + ".gob"
-	err := readGob(getFile, getdata)
+	err := readGob(getFile, &getdata)
 	if err != nil {
 		Logs.Loggers().Print(err)
 	}
@@ -53,7 +53,7 @@ func writeGob(filePath string, object interface{}) error {
 		encoder := gob.NewEncoder(file)
 		encoder.Encode(object)
 	}
-	defer file.Close()
+	file.Close()
 	return err
 }
 
@@ -64,6 +64,6 @@ func readGob(filePath string, object interface{}) error {
 		decoder := gob.NewDecoder(file)
 		err = decoder.Decode(object)
 	}
-	defer file.Close()
+	file.Close()
 	return err
 }
