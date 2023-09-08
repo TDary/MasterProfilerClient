@@ -8,7 +8,7 @@ import (
 )
 
 // 启动解析进程
-func StartAnalyze(data AnalyzeData) int {
+func StartAnalyze(data AnalyzeData, analyzeProject string, num int) int {
 	logPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + ".log"
 	rawPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile
 	csvPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + ".csv"
@@ -24,17 +24,11 @@ func StartAnalyze(data AnalyzeData) int {
 		Logs.Loggers().Print("无可使用Unity版本----")
 		return -1
 	}
-	//寻找可用的Unity工程进行解析
-	UnityPjPath, num := GetUnityProject()
-	if UnityPjPath == "" {
-		Logs.Loggers().Print("无可用Unity工程----")
-		return -1
-	}
 	var Startargs strings.Builder
 	Startargs.WriteString(Unity_Name)
 	Startargs.WriteString(" -quit -batchmode -nographics ")
 	Startargs.WriteString("-projectPath ")
-	Startargs.WriteString(UnityPjPath)
+	Startargs.WriteString(analyzeProject)
 	Startargs.WriteString(" -executeMethod Entrance.EntranceParseBegin ")
 	Startargs.WriteString("-logFile ")
 	Startargs.WriteString(logPath)
@@ -108,4 +102,14 @@ func GetUnityVerison(data AnalyzeData) string {
 		}
 	}
 	return ""
+}
+
+//检查是否有空闲可解析工程
+func CheckFreeAnalyze() bool {
+	for _, val := range config.UnityProjectPath {
+		if val.State {
+			return true
+		}
+	}
+	return false
 }

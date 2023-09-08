@@ -53,3 +53,8 @@ type ServerConfig struct {
 	Ip   string
 	Port string
 }
+
+type MachineState struct {
+	Ip    string
+	State string //三个状态：忙碌，空闲和离线
+}

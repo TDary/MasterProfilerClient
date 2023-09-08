@@ -19,8 +19,8 @@ func ListenAndServer(address string) {
 func DealReceivedMessage(msg string) int {
 	if strings.Contains(msg, "analyze") {
 		BeginMsg := strings.Split(msg, "?")[1]
-		go ParseServer.Analyze(BeginMsg)
-		Logs.Loggers().Print("接收到开始解析的消息----")
+		go ParseServer.GetAnalyzeMes(BeginMsg)
+		Logs.Loggers().Print("接收到解析任务的消息----")
 		return 200
 	} else if strings.Contains(msg, "stop") {
 		SuccessMsg := strings.Split(msg, "?")[1]

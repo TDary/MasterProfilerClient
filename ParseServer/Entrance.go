@@ -3,7 +3,9 @@ package ParseServer
 import (
 	"MasterClient/Logs"
 	"MasterClient/Minio"
+	"MasterClient/RabbitMqServer"
 	"MasterClient/UnityServer"
+	"os"
 	"strings"
 	"time"
 )
@@ -13,13 +15,45 @@ func AnalyzeSuccess(data string) {
 	ParseSuccessData(data)
 }
 
-// 开始启动解析前的准备工作
+//从http消息中获取任务并存入队列中
+func GetAnalyzeMes(data string) {
+	filepath := "./AnalyTask"
+	_, err := os.Stat(filepath)
+	if err != nil {
+		os.Mkdir(filepath, 0755)
+	}
+	RabbitMqServer.PutData(filepath+"/ParseQue", data)
+}
+
+//检测队列中的解析任务并拿出来进行解析
+func AnalyzeRangeCheck() {
+	taskPath := "./AnalyTask/ParseQue"
+	for {
+		//有空闲的才去分配解析
+		_, err := os.Stat(taskPath)
+		if err == nil {
+			if UnityServer.CheckFreeAnalyze() {
+				taskdata := RabbitMqServer.GetData(taskPath)
+				if taskdata != "" {
+					go Analyze(taskdata)
+				}
+			}
+		} else {
+			//Logs.Loggers().Print("无待解析的队列文件----")
+		}
+		time.Sleep(3 * time.Second) //每隔3秒开启下一个解析任务
+	}
+}
+
+// 开始启动解析进程
 func Analyze(data string) {
+	Logs.Loggers().Print("开始解析任务----")
 	var getdata UnityServer.AnalyzeData
+	project, num := UnityServer.GetUnityProject()
 	getdata = ParseData(data, getdata) //解析传入的数据
 	successDownLoad := UnityServer.DownLoadRawFile(getdata)
 	if successDownLoad {
-		projectID := UnityServer.StartAnalyze(getdata)
+		projectID := UnityServer.StartAnalyze(getdata, project, num)
 		CheckProcessState(getdata, projectID) //监控解析进程
 		Logs.Loggers().Print("解析流程完毕----")
 	} else {

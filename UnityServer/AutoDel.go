@@ -20,9 +20,13 @@ func CheckDiskToFree() {
 		if usage.Free < 52428800 { //小于50MB
 			//触发删除源文件功能
 			filepath.Walk(filePath, func(path string, info os.FileInfo, err error) error {
+				if err != nil {
+					Logs.Loggers().Print("当前目录获取失败", err)
+					return err
+				}
 				FileInfo, err := os.Stat(path)
 				if err != nil {
-					Logs.Loggers().Print("无法获取当前文件状态----")
+					Logs.Loggers().Print("无法获取当前文件状态----", err)
 					return err
 				}
 				modtiTime := FileInfo.ModTime()        //获取当前文件或目录的最后修改时间
