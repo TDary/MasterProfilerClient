@@ -2,6 +2,7 @@ package ParseServer
 
 import (
 	"MasterClient/Logs"
+	"MasterClient/Minio"
 	"MasterClient/UnityServer"
 	"strings"
 	"time"
@@ -16,15 +17,11 @@ func AnalyzeSuccess(data string) {
 func Analyze(data string) {
 	var getdata UnityServer.AnalyzeData
 	getdata = ParseData(data, getdata) //解析传入的数据
-	successDownLoad := UnityServer.DownLoadFile(getdata)
+	successDownLoad := UnityServer.DownLoadRawFile(getdata)
 	if successDownLoad {
 		projectID := UnityServer.StartAnalyze(getdata)
 		CheckProcessState(getdata, projectID) //监控解析进程
-		//完成解析
 		Logs.Loggers().Print("解析流程完毕----")
-		UnityServer.SuccessAnalyze(getdata)
-		//完成解析消息回传发送准备
-		UnityServer.GetSucessData(getdata.RawFile, getdata.UUID)
 	} else {
 		Logs.Loggers().Print("下载源文件" + getdata.RawFile + "失败----")
 	}
@@ -41,11 +38,17 @@ func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
 			Logs.Loggers().Print("UUID:" + getdata.UUID + ",rawFile:" + getdata.RawFile + "解析成功----")
 			UnityServer.RleaseUnityProject(id)
 			UnityServer.SuccessAnalyze(getdata)
+			UploadSuccessedData(getdata)
+			//完成解析消息回传发送
+			UnityServer.GetSucessData(getdata.RawFile, getdata.UUID)
 			break
 		} else if state == "failed" {
 			Logs.Loggers().Print("UUID:" + getdata.UUID + ",rawFile:" + getdata.RawFile + "解析失败----")
 			UnityServer.RleaseUnityProject(id)
 			UnityServer.SuccessAnalyze(getdata)
+			UploadSuccessedData(getdata)
+			//解析失败消息上报
+			UnityServer.SendFailMessage(getdata.RawFile, getdata.UUID)
 			break
 		} else {
 			//超过一定的等待时间即代表着已经解析出问题了
@@ -53,6 +56,8 @@ func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
 				//释放unity解析池组
 				UnityServer.RleaseUnityProject(id)
 				UnityServer.SuccessAnalyze(getdata)
+				//解析失败消息上报
+				UnityServer.SendFailMessage(getdata.RawFile, getdata.UUID)
 				break
 			}
 		}
@@ -124,4 +129,32 @@ func ParseSuccessData(data string) {
 		}
 	}
 	analyzeData = append(analyzeData, gdata)
+}
+
+//上传解析完成的文件
+func UploadSuccessedData(getdata UnityServer.AnalyzeData) {
+	uploadMutex.TryLock()
+	if getdata.AnalyzeType == "simple" {
+		objName := getdata.UUID + "/" + getdata.RawFile + ".csv"
+		contentType := "application/csv"
+		fPath := UnityServer.GetConfig().FilePath + "/" + getdata.UUID + "/" + getdata.RawFile + ".csv"
+		Minio.UploadFile(objName, fPath, contentType)
+	} else if getdata.AnalyzeType == "funprofiler" {
+		funObjName := getdata.UUID + "/" + getdata.RawFile + "_fun.bin"
+		funrowObjName := getdata.UUID + "/" + getdata.RawFile + "_funrow.bin"
+		renrowObjName := getdata.UUID + "/" + getdata.RawFile + "_renderrow.bin"
+		funhashObjName := getdata.UUID + "/" + getdata.RawFile + "_funhash.bin"
+		funPath := UnityServer.GetConfig().FilePath + "/" + getdata.UUID + "/" + getdata.RawFile + "_fun.bin"
+		funrowPath := UnityServer.GetConfig().FilePath + "/" + getdata.UUID + "/" + getdata.RawFile + "_funrow.bin"
+		renrowPath := UnityServer.GetConfig().FilePath + "/" + getdata.UUID + "/" + getdata.RawFile + "_renderrow.bin"
+		funhashPath := UnityServer.GetConfig().FilePath + "/" + getdata.UUID + "/" + getdata.RawFile + "_funhash.bin"
+		contentType := "application/bin"
+		Minio.UploadFile(funObjName, funPath, contentType)
+		Minio.UploadFile(funrowObjName, funrowPath, contentType)
+		Minio.UploadFile(renrowObjName, renrowPath, contentType)
+		Minio.UploadFile(funhashObjName, funhashPath, contentType)
+	} else {
+		//todo:deep
+	}
+	uploadMutex.Unlock()
 }

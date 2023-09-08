@@ -2,12 +2,18 @@ package UnityServer
 
 import (
 	"MasterClient/Logs"
+	"MasterClient/Minio"
 	"encoding/json"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+//获取配置文件
+func GetConfig() Config {
+	return config
+}
 
 func InitClient() string {
 	var data, _ = ioutil.ReadFile("./ClientConfig.json")
@@ -24,6 +30,8 @@ func InitClient() string {
 	CheckUnityProject()
 	//检测磁盘空间功能，自动删除旧文件
 	go CheckDiskToFree()
+	//初始化Minio服务
+	Minio.InitMinio(config.MinioServerPath, config.MinioBucket)
 	address := config.ClientUrl.Ip + ":" + config.ClientUrl.Port
 	return address
 }
@@ -46,6 +54,7 @@ func CheckCaseState() {
 	})
 }
 
+//检查解析工程
 func CheckUnityProject() {
 	Logs.Loggers().Print("正在检查Unity解析模板以及Unity程序是否存在----")
 	for i := 0; i < len(config.UnityProjectPath); i++ {

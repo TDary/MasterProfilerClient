@@ -9,7 +9,6 @@ import (
 
 func main() {
 	Logs.Loggers().Print("欢迎使用解析服务器客户端！！！")
-	// Minio.InitMinio()   待完善
 	clientUrl := UnityServer.InitClient()
 	HttpServer.ListenAndServer(clientUrl)
 }

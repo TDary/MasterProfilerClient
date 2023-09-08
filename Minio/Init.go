@@ -3,20 +3,21 @@ package Minio
 import (
 	"MasterClient/Logs"
 
-	"github.com/minio/minio-go/v6"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
-func InitMinio() {
-	endpoint := "play.min.io" //minio服务器url
-	accessKeyID := "minio"
-	secretAccessKey := "minio"
-	useSSL := true
-
+func InitMinio(endpoint string, bucket string) {
+	//endpoint //minio服务器url
+	BucketName = bucket
+	accessKeyID := "cdr"
+	secretAccessKey := "cdrmm666!@#"
+	useSSL := false
 	// 初使化 minio client对象。
-	minioClient, err := minio.New(endpoint, accessKeyID, secretAccessKey, useSSL)
+	minioClient, err = minio.New(endpoint, &minio.Options{Creds: credentials.NewStaticV4(accessKeyID, secretAccessKey, ""), Secure: useSSL})
 	if err != nil {
-		Logs.Loggers().Fatalln(err)
+		Logs.Loggers().Print(err)
+		return
 	}
-
-	Logs.Loggers().Printf("%#v\n", minioClient) // minioClient初使化成功
+	Logs.Loggers().Print("Minio初始化完毕----")
 }

@@ -5,9 +5,14 @@ go 1.18
 require github.com/gopherjs/gopherjs v1.17.2
 
 require (
+	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
+	github.com/google/uuid v1.3.0 // indirect
+	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
+	github.com/rs/xid v1.5.0 // indirect
+	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 )
 
@@ -16,7 +21,7 @@ require (
 	github.com/klauspost/cpuid v1.2.3 // indirect
 	github.com/minio/mc v0.0.0-20230907224855-9dcef8825fae
 	github.com/minio/md5-simd v1.1.2 // indirect
-	github.com/minio/minio-go/v6 v6.0.57
+	github.com/minio/minio-go/v7 v7.0.63
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect

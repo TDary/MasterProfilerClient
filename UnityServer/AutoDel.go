@@ -23,6 +23,7 @@ func CheckDiskToFree() {
 				FileInfo, err := os.Stat(path)
 				if err != nil {
 					Logs.Loggers().Print("无法获取当前文件状态----")
+					return err
 				}
 				modtiTime := FileInfo.ModTime()        //获取当前文件或目录的最后修改时间
 				currentTime := time.Now()              //获取当前时间
