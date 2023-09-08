@@ -34,6 +34,7 @@ func SuccessBegin(data AnalyzeData, num int) {
 
 // 解析完毕的话去除文件中进行的
 func SuccessAnalyze(data AnalyzeData) {
+	removeLock.TryLock()
 	var getdata AnalyzeData
 	currentNum := strconv.Itoa(data.AnalyzeNum)
 	getFile := "./analyzing" + "/" + currentNum + ".gob"
@@ -44,6 +45,7 @@ func SuccessAnalyze(data AnalyzeData) {
 	if data.UUID == getdata.UUID && data.RawFile == getdata.RawFile && data.AnalyzeType == getdata.AnalyzeType {
 		os.Remove(getFile)
 	}
+	removeLock.Unlock()
 }
 
 //序列化写入文件

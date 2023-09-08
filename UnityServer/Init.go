@@ -22,6 +22,8 @@ func InitClient() string {
 	SendStartMess()
 	//检查Unity工程是否存在等
 	CheckUnityProject()
+	//检测磁盘空间功能，自动删除旧文件
+	go CheckDiskToFree()
 	address := config.ClientUrl.Ip + ":" + config.ClientUrl.Port
 	return address
 }

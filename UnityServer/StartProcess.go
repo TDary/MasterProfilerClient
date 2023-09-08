@@ -72,24 +72,24 @@ func StartAnalyze(data AnalyzeData) int {
 
 // 占用一个Unity工程
 func GetUnityProject() (string, int) {
-	config.lock.Lock() //加锁防止多个线程同时启动时获取到同一个Unity解析工程
-	defer config.lock.Unlock()
-	for _, val := range config.UnityProjectPath {
+	taskMutex.TryLock() //加锁防止多个线程同时启动时获取到同一个Unity解析工程
+	for key, val := range config.UnityProjectPath {
 		if val.State {
-			val.State = false
+			config.UnityProjectPath[key].State = false
+			taskMutex.Unlock()
 			return val.Path, val.Numb
 		}
 	}
+	taskMutex.Unlock()
 	return "", -1
 }
 
 // 释放Unity工程使用状态
 func RleaseUnityProject(num int) {
-	config.lock.Lock() //加锁
-	defer config.lock.Unlock()
-	for _, val := range config.UnityProjectPath {
+	for key, val := range config.UnityProjectPath {
 		if val.Numb == num {
-			val.State = true
+			config.UnityProjectPath[key].State = true
+			break
 		}
 	}
 }

@@ -2,8 +2,10 @@ package UnityServer
 
 import "sync"
 
-var config Config  //客户端解析配置
-var lck sync.Mutex //互斥锁
+var config Config //客户端解析配置
+var taskMutex sync.Mutex
+var removeLock sync.Mutex
+
 type OneCase struct {
 	UUID    string
 	RawFile string
@@ -33,7 +35,6 @@ type Config struct {
 	MinioServerPath  string
 	MasterServerUrl  ServerConfig
 	ClientUrl        ServerConfig
-	lock             sync.Mutex
 }
 
 type UnityProject struct {

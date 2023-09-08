@@ -32,15 +32,17 @@ func Analyze(data string) {
 
 //循环检测进程
 func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
+	getdata.AnalyzeNum = id //把工程id赋值
 	var count int
 	for {
 		time.Sleep(5 * time.Second)
-		if CheckAnalyzeState(getdata) == "success" {
+		state := CheckAnalyzeState(getdata)
+		if state == "success" {
 			Logs.Loggers().Print("UUID:" + getdata.UUID + ",rawFile:" + getdata.RawFile + "解析成功----")
 			UnityServer.RleaseUnityProject(id)
 			UnityServer.SuccessAnalyze(getdata)
 			break
-		} else if CheckAnalyzeState(getdata) == "failed" {
+		} else if state == "failed" {
 			Logs.Loggers().Print("UUID:" + getdata.UUID + ",rawFile:" + getdata.RawFile + "解析失败----")
 			UnityServer.RleaseUnityProject(id)
 			UnityServer.SuccessAnalyze(getdata)
@@ -60,19 +62,21 @@ func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
 
 //检查解析完毕的数组是否有对应的
 func CheckAnalyzeState(getdata UnityServer.AnalyzeData) string {
-	logicMutex.Lock()
-	defer logicMutex.Unlock()
+	logicMutex.TryLock()
 	for i := 0; i < len(analyzeData); i++ {
 		if analyzeData[i].RawFile == getdata.RawFile && analyzeData[i].UUID == getdata.UUID &&
 			analyzeData[i].AnalyzeType == getdata.AnalyzeType && analyzeData[i].State == "success" {
 			analyzeData = append(analyzeData[:i], analyzeData[i+1:]...)
+			logicMutex.Unlock()
 			return "success"
 		} else if analyzeData[i].RawFile == getdata.RawFile && analyzeData[i].UUID == getdata.UUID &&
 			analyzeData[i].AnalyzeType == getdata.AnalyzeType && analyzeData[i].State == "failed" {
 			analyzeData = append(analyzeData[:i], analyzeData[i+1:]...)
+			logicMutex.Unlock()
 			return "failed"
 		}
 	}
+	logicMutex.Unlock()
 	return "wait"
 }
 
