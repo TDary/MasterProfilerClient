@@ -15,6 +15,11 @@ func AnalyzeSuccess(data string) {
 	ParseSuccessData(data)
 }
 
+//获取解析器状态请求
+func RequestMachineState(data string) {
+
+}
+
 //从http消息中获取任务并存入队列中
 func GetAnalyzeMes(data string) {
 	filepath := "./AnalyTask"

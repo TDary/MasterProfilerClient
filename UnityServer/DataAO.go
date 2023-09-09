@@ -5,6 +5,7 @@ import "sync"
 var config Config //客户端解析配置
 var taskMutex sync.Mutex
 var removeLock sync.Mutex
+var m_State MachineState
 
 type OneCase struct {
 	UUID    string
@@ -56,5 +57,5 @@ type ServerConfig struct {
 
 type MachineState struct {
 	Ip    string
-	State string //三个状态：忙碌，空闲和离线
+	State string //三个状态：忙碌，空闲和离线  idle:空闲 busy:繁忙 2:离线  离线通常是在合并服务器上显示
 }

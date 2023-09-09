@@ -22,14 +22,16 @@ func InitClient() string {
 		Logs.Loggers().Fatal(err)
 	}
 	Logs.Loggers().Print("初始化解析客户端配置成功----")
-	//为了避免死机重启后有任务还在运行卡流程，加入一个启动服务器检测的功能
-	CheckCaseState()
 	//启动客户端解析需要请求一次master服务器
 	SendStartMess()
+	//为了避免死机重启后有任务还在运行卡流程，加入一个启动服务器检测的功能
+	CheckCaseState()
 	//检查Unity工程是否存在等
 	CheckUnityProject()
 	//检测磁盘空间功能，自动删除旧文件
 	go CheckDiskToFree()
+	//启动检测解析器状态功能
+	go TaskTransfer()
 	//初始化Minio服务
 	Minio.InitMinio(config.MinioServerPath, config.MinioBucket)
 	address := config.ClientUrl.Ip + ":" + config.ClientUrl.Port

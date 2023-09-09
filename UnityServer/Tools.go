@@ -5,8 +5,10 @@ import (
 	"encoding/gob"
 	"os"
 	"strconv"
+	"time"
 )
 
+//检查Unity版本
 func CheckUnityVersion(data AnalyzeData) string {
 	for i := 0; i < len(config.UnityPath); i++ {
 		if data.UnityVersion == config.UnityPath[i].Version {
@@ -68,4 +70,41 @@ func readGob(filePath string, object interface{}) error {
 	}
 	file.Close()
 	return err
+}
+
+//获取当前解析状态
+func GetAnalyzeProjState() MachineState {
+	for i := 0; i < len(config.UnityProjectPath); i++ {
+		if config.UnityProjectPath[i].State {
+			m_State.State = "idle"
+			return m_State
+		}
+	}
+	m_State.State = "busy"
+	return m_State
+}
+
+//获取空闲状态的解析工程进程
+func GetIdleAnalyzer() int {
+	num := 0
+	for i := 0; i < len(config.UnityProjectPath); i++ {
+		if config.UnityProjectPath[i].State {
+			num++
+		}
+	}
+	return num
+}
+
+//任务轮转通信 检测
+func TaskTransfer() {
+	m_State.Ip = config.ClientUrl.Ip
+	m_State.State = "idle" //刚开始赋值为空闲状态
+	for {
+		if GetAnalyzeProjState().State == "busy" {
+			//将任务进行轮转至其他解析器上
+			//先请求合并服务器获取一下空闲的解析器状态表
+			//如果这个解析器状态表不为空，则根据这个表格中去分配任务，根据其可用的空闲进程来分配
+		}
+		time.Sleep(10 * time.Minute) //每隔十分钟检测一次
+	}
 }
