@@ -9,13 +9,18 @@ import (
 
 // 启动解析进程
 func StartAnalyze(data AnalyzeData, analyzeProject string, num int) int {
-	logPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + ".log"
-	rawPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile
-	csvPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + ".csv"
-	funPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + "_fun.bin"
-	funRowPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + "_funrow.bin"
-	renderRowPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + "_renderrow.bin"
-	funhashPath := config.FilePath + "/" + data.UUID + "/" + data.RawFile + "_funhash.bin"
+	var rawPath strings.Builder
+	rawPath.WriteString(config.FilePath)
+	rawPath.WriteString("/")
+	rawPath.WriteString(data.UUID)
+	rawPath.WriteString("/")
+	rawPath.WriteString(data.RawFile)
+	logPath := rawPath.String() + ".log"
+	csvPath := rawPath.String() + ".csv"
+	funPath := rawPath.String() + "_fun.bin"
+	funRowPath := rawPath.String() + "_funrow.bin"
+	renderRowPath := rawPath.String() + "_renderrow.bin"
+	funhashPath := rawPath.String() + "_funhash.bin"
 	analyzeType := data.AnalyzeType
 	shield := "false"
 	//判断unity版本然后进行选取
@@ -33,7 +38,7 @@ func StartAnalyze(data AnalyzeData, analyzeProject string, num int) int {
 	Startargs.WriteString("-logFile ")
 	Startargs.WriteString(logPath)
 	Startargs.WriteString(" -rawPath ")
-	Startargs.WriteString(rawPath)
+	Startargs.WriteString(rawPath.String())
 	Startargs.WriteString(" -csvPath ")
 	Startargs.WriteString(csvPath)
 	Startargs.WriteString(" -funPath ")
