@@ -105,12 +105,22 @@ func TaskTransfer() {
 			//将任务进行轮转至其他解析器上
 			idleTable := SendToGetAnalyzer()
 			if len(idleTable) > 0 {
+				isNoque := false
 				for i := 0; i < len(idleTable); i++ {
 					if idleTable[i].State == "idle" && idleTable[i].Num > 0 {
 						for j := 0; j < idleTable[i].Num; j++ {
 							taskPath := "./AnalyTask/ParseQue"
 							data := RabbitMqServer.GetData(taskPath)
+							if data == "" {
+								//队列已经空了，没有任务了。现在要进行打断退出
+								isNoque = true
+								break
+							}
 							SendAnalyzeToOther(data, idleTable[i].Ip, taskPath) //轮转任务
+						}
+						if isNoque {
+							//队列已空，退出轮转状态
+							break
 						}
 					}
 				}
