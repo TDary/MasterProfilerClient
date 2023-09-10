@@ -2,6 +2,7 @@ package UnityServer
 
 import (
 	"MasterClient/Logs"
+	"MasterClient/RabbitMqServer"
 	"encoding/gob"
 	"os"
 	"strconv"
@@ -102,8 +103,18 @@ func TaskTransfer() {
 	for {
 		if GetAnalyzeProjState().State == "busy" {
 			//将任务进行轮转至其他解析器上
-			//先请求合并服务器获取一下空闲的解析器状态表
-			//如果这个解析器状态表不为空，则根据这个表格中去分配任务，根据其可用的空闲进程来分配
+			idleTable := SendToGetAnalyzer()
+			if len(idleTable) > 0 {
+				for i := 0; i < len(idleTable); i++ {
+					if idleTable[i].State == "idle" && idleTable[i].Num > 0 {
+						for j := 0; j < idleTable[i].Num; j++ {
+							taskPath := "./AnalyTask/ParseQue"
+							data := RabbitMqServer.GetData(taskPath)
+							SendAnalyzeToOther(data, idleTable[i].Ip, taskPath) //轮转任务
+						}
+					}
+				}
+			}
 		}
 		time.Sleep(10 * time.Minute) //每隔十分钟检测一次
 	}

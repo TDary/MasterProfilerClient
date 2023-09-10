@@ -58,4 +58,5 @@ type ServerConfig struct {
 type MachineState struct {
 	Ip    string
 	State string //三个状态：忙碌，空闲和离线  idle:空闲 busy:繁忙 2:离线  离线通常是在合并服务器上显示
+	Num   int    //可用的解析进程数量
 }
