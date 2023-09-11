@@ -145,6 +145,9 @@ func ParseData(data string, gdata UnityServer.AnalyzeData) UnityServer.AnalyzeDa
 		} else if strings.Contains(current[i], "rawfile") {
 			cdata := strings.Split(current[i], "=")
 			gdata.RawFile = cdata[1]
+		} else if strings.Contains(current[i], "rawfilename") {
+			cdata := strings.Split(current[i], "=")
+			gdata.RawFileName = cdata[1]
 		} else if strings.Contains(current[i], "unityversion") {
 			cdata := strings.Split(current[i], "=")
 			gdata.UnityVersion = cdata[1]

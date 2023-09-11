@@ -23,6 +23,7 @@ type AnalyzeState struct {
 type AnalyzeData struct {
 	UUID          string
 	RawFile       string
+	RawFileName   string
 	UnityVersion  string
 	AnalyzeBucket string
 	AnalyzeNum    int
