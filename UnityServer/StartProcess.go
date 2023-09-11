@@ -82,7 +82,7 @@ func StartAnalyzeForFunProfiler(data AnalyzeData, analyzeProject string, num int
 	var logPath strings.Builder
 	var funPath strings.Builder
 	var funRowPath strings.Builder
-	var renderRowPath strings.Builder
+	//var renderRowPath strings.Builder
 	//——————————————————————————————————————rawPath
 	rawPath.WriteString(config.FilePath)
 	rawPath.WriteString("/")
@@ -113,10 +113,10 @@ func StartAnalyzeForFunProfiler(data AnalyzeData, analyzeProject string, num int
 	funRowPath.WriteString(data.RawFile)
 	funRowPath.WriteString("_funrow.bin")
 	//————————————————————————————————————funrenrowPath
-	renderRowPath.WriteString(analyzePath)
-	renderRowPath.WriteString("/")
-	renderRowPath.WriteString(data.RawFile)
-	renderRowPath.WriteString("_renderrow.bin")
+	// renderRowPath.WriteString(analyzePath)
+	// renderRowPath.WriteString("/")
+	// renderRowPath.WriteString(data.RawFile)
+	// renderRowPath.WriteString("_renderrow.bin")
 	analyzeType := data.AnalyzeType
 	shield := "false"
 	//判断unity版本然后进行选取
@@ -139,9 +139,8 @@ func StartAnalyzeForFunProfiler(data AnalyzeData, analyzeProject string, num int
 	Startargs.WriteString(funPath.String())
 	Startargs.WriteString(" -funrowPath ")
 	Startargs.WriteString(funRowPath.String())
-	Startargs.WriteString(" -funrenderrowPath ")
-	Startargs.WriteString(renderRowPath.String())
-	Startargs.WriteString(" -funhashPath ")
+	// Startargs.WriteString(" -funrenderrowPath ")
+	// Startargs.WriteString(renderRowPath.String())
 	Startargs.WriteString(" -analyzeType ")
 	Startargs.WriteString(analyzeType)
 	Startargs.WriteString(" -shieldSwitch ")
