@@ -5,11 +5,26 @@ import (
 	"MasterClient/Minio"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
-func DownLoadRawFile(getdata AnalyzeData) bool {
-	filePath := config.FilePath + "/" + getdata.UUID + "/" + getdata.RawFile + ".zip"
-	var isExit, _ = ioutil.ReadFile(filePath)
+func DownLoadRawFile(getdata AnalyzeData) bool { //todo:字符串拼接优化
+	var filePath strings.Builder
+	var srcPath strings.Builder
+	//——————————————————————————————————filePath
+	filePath.WriteString(config.FilePath)
+	filePath.WriteString("/")
+	filePath.WriteString(getdata.UUID)
+	filePath.WriteString("/")
+	filePath.WriteString(getdata.RawFile)
+	//——————————————————————————————————srcPath
+	srcPath.WriteString(config.FilePath)
+	srcPath.WriteString("/")
+	srcPath.WriteString(getdata.UUID)
+	srcPath.WriteString("/")
+	srcPath.WriteString(getdata.RawFile)
+	srcPath.WriteString("_rawdata.zip")
+	var isExit, _ = ioutil.ReadFile(filePath.String())
 	if isExit != nil {
 		Logs.Loggers().Print("已存在源文件:" + getdata.RawFile)
 		return true
@@ -22,9 +37,9 @@ func DownLoadRawFile(getdata AnalyzeData) bool {
 			os.Mkdir(createPath, 0755) //创建文件夹
 		}
 		fileName := getdata.UUID + "/" + getdata.RawFile + ".zip"
-		isSuccess := Minio.DownLoadFile(fileName, filePath, "application/zip")
+		isSuccess := Minio.DownLoadFile(fileName, srcPath.String(), "application/zip")
 		if isSuccess {
-			err := ExtractZip(filePath, createPath)
+			err := ExtractZip(srcPath.String(), createPath)
 			if err != nil {
 				Logs.Loggers().Print("解压源文件夹失败----")
 				return false
