@@ -2,25 +2,121 @@ package UnityServer
 
 import (
 	"MasterClient/Logs"
+	"os"
 	"os/exec"
 	"strings"
 	"syscall"
 )
 
-// 启动解析进程
-func StartAnalyze(data AnalyzeData, analyzeProject string, num int) int {
+//启动csv解析进程
+func StartAnalyzeForCsvProfiler(data AnalyzeData, analyzeProject string, num int) int {
 	var rawPath strings.Builder
+	var analyzePath string
+	var logPath strings.Builder
+	var csvPath strings.Builder
+	//————————————————————————————————rwaPath
 	rawPath.WriteString(config.FilePath)
 	rawPath.WriteString("/")
 	rawPath.WriteString(data.UUID)
 	rawPath.WriteString("/")
 	rawPath.WriteString(data.RawFile)
-	logPath := rawPath.String() + ".log"
-	csvPath := rawPath.String() + ".csv"
-	funPath := rawPath.String() + "_fun.bin"
-	funRowPath := rawPath.String() + "_funrow.bin"
-	renderRowPath := rawPath.String() + "_renderrow.bin"
-	funhashPath := rawPath.String() + "_funhash.bin"
+	analyzePath = strings.Split(rawPath.String(), ".")[0]
+	_, err := os.Stat(analyzePath)
+	if err != nil {
+		//文件夹不存在 需要创建一个
+		os.Mkdir(analyzePath, 0755)
+	}
+	//——————————————————————————————————logPath
+	logPath.WriteString(config.FilePath)
+	logPath.WriteString("/")
+	logPath.WriteString(data.UUID)
+	logPath.WriteString("/")
+	logPath.WriteString(data.RawFile)
+	logPath.WriteString(".log")
+	//————————————————————————————————————csvPath
+	csvPath.WriteString(analyzePath)
+	csvPath.WriteString("/")
+	csvPath.WriteString(data.RawFile)
+	csvPath.WriteString(".csv")
+	analyzeType := data.AnalyzeType
+	//判断unity版本然后进行选取
+	Unity_Name := GetUnityVerison(data)
+	if Unity_Name == "" {
+		Logs.Loggers().Print("无可使用Unity版本----")
+		return -1
+	}
+	var Startargs strings.Builder
+	Startargs.WriteString(Unity_Name)
+	Startargs.WriteString(" -quit -batchmode -nographics ")
+	Startargs.WriteString("-projectPath ")
+	Startargs.WriteString(analyzeProject)
+	Startargs.WriteString(" -executeMethod Entrance.EntranceParseBegin ")
+	Startargs.WriteString("-logFile ")
+	Startargs.WriteString(logPath.String())
+	Startargs.WriteString(" -rawPath ")
+	Startargs.WriteString(rawPath.String())
+	Startargs.WriteString(" -csvPath ")
+	Startargs.WriteString(csvPath.String())
+	Startargs.WriteString(" -analyzeType ")
+	Startargs.WriteString(analyzeType)
+	Startargs.WriteString(" -UUID ")
+	Startargs.WriteString(data.UUID)
+	Startargs.WriteString(" -ServerUrl ")
+	Startargs.WriteString(config.ClientUrl.Ip)
+	Startargs.WriteString(":")
+	Startargs.WriteString(config.ClientUrl.Port)
+	cmd := exec.Command("cmd.exe", "/c", "start "+Startargs.String())
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	er := cmd.Start()
+	if er != nil { // 运行命令
+		Logs.Loggers().Print(er.Error())
+	}
+	SuccessBegin(data, num)
+	return num
+}
+
+// 启动函数堆栈解析进程
+func StartAnalyzeForFunProfiler(data AnalyzeData, analyzeProject string, num int) int {
+	var rawPath strings.Builder
+	var analyzePath string
+	var logPath strings.Builder
+	var funPath strings.Builder
+	var funRowPath strings.Builder
+	var renderRowPath strings.Builder
+	//——————————————————————————————————————rawPath
+	rawPath.WriteString(config.FilePath)
+	rawPath.WriteString("/")
+	rawPath.WriteString(data.UUID)
+	rawPath.WriteString("/")
+	rawPath.WriteString(data.RawFile)
+	analyzePath = strings.Split(rawPath.String(), ".")[0]
+	_, err := os.Stat(analyzePath)
+	if err != nil {
+		//文件夹不存在 需要创建一个
+		os.Mkdir(analyzePath, 0755)
+	}
+	//——————————————————————————————————logPath
+	logPath.WriteString(config.FilePath)
+	logPath.WriteString("/")
+	logPath.WriteString(data.UUID)
+	logPath.WriteString("/")
+	logPath.WriteString(data.RawFile)
+	logPath.WriteString(".log")
+	//————————————————————————————————————funPath
+	funPath.WriteString(analyzePath)
+	funPath.WriteString("/")
+	funPath.WriteString(data.RawFile)
+	funPath.WriteString("_fun.bin")
+	//————————————————————————————————————funRowPath
+	funRowPath.WriteString(analyzePath)
+	funRowPath.WriteString("/")
+	funRowPath.WriteString(data.RawFile)
+	funRowPath.WriteString("_funrow.bin")
+	//————————————————————————————————————funrenrowPath
+	renderRowPath.WriteString(analyzePath)
+	renderRowPath.WriteString("/")
+	renderRowPath.WriteString(data.RawFile)
+	renderRowPath.WriteString("_renderrow.bin")
 	analyzeType := data.AnalyzeType
 	shield := "false"
 	//判断unity版本然后进行选取
@@ -36,19 +132,16 @@ func StartAnalyze(data AnalyzeData, analyzeProject string, num int) int {
 	Startargs.WriteString(analyzeProject)
 	Startargs.WriteString(" -executeMethod Entrance.EntranceParseBegin ")
 	Startargs.WriteString("-logFile ")
-	Startargs.WriteString(logPath)
+	Startargs.WriteString(logPath.String())
 	Startargs.WriteString(" -rawPath ")
 	Startargs.WriteString(rawPath.String())
-	Startargs.WriteString(" -csvPath ")
-	Startargs.WriteString(csvPath)
 	Startargs.WriteString(" -funPath ")
-	Startargs.WriteString(funPath)
+	Startargs.WriteString(funPath.String())
 	Startargs.WriteString(" -funrowPath ")
-	Startargs.WriteString(funRowPath)
+	Startargs.WriteString(funRowPath.String())
 	Startargs.WriteString(" -funrenderrowPath ")
-	Startargs.WriteString(renderRowPath)
+	Startargs.WriteString(renderRowPath.String())
 	Startargs.WriteString(" -funhashPath ")
-	Startargs.WriteString(funhashPath)
 	Startargs.WriteString(" -analyzeType ")
 	Startargs.WriteString(analyzeType)
 	Startargs.WriteString(" -shieldSwitch ")

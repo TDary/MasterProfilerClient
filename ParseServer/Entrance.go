@@ -5,7 +5,10 @@ import (
 	"MasterClient/Minio"
 	"MasterClient/RabbitMqServer"
 	"MasterClient/UnityServer"
+	"archive/zip"
+	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -17,7 +20,7 @@ func AnalyzeSuccess(data string) {
 
 //获取解析器状态请求
 func RequestMachineState(data string) {
-
+	Logs.Loggers().Print(data)
 }
 
 //从http消息中获取任务并存入队列中
@@ -58,9 +61,17 @@ func Analyze(data string) {
 	getdata = ParseData(data, getdata) //解析传入的数据
 	successDownLoad := UnityServer.DownLoadRawFile(getdata)
 	if successDownLoad {
-		projectID := UnityServer.StartAnalyze(getdata, project, num)
-		CheckProcessState(getdata, projectID) //监控解析进程
-		Logs.Loggers().Print("解析流程完毕----")
+		if getdata.AnalyzeType == "simple" {
+			projectID := UnityServer.StartAnalyzeForCsvProfiler(getdata, project, num)
+			CheckProcessState(getdata, projectID) //监控解析进程
+			Logs.Loggers().Print("解析流程完毕----")
+		} else if getdata.AnalyzeType == "funprofiler" {
+			projectID := UnityServer.StartAnalyzeForFunProfiler(getdata, project, num)
+			CheckProcessState(getdata, projectID) //监控解析进程
+			Logs.Loggers().Print("解析流程完毕----")
+		} else {
+			//deep  暂时不解析
+		}
 	} else {
 		Logs.Loggers().Print("下载源文件" + getdata.RawFile + "失败----")
 	}
@@ -173,27 +184,74 @@ func ParseSuccessData(data string) {
 //上传解析完成的文件
 func UploadSuccessedData(getdata UnityServer.AnalyzeData) {
 	uploadMutex.TryLock()
-	if getdata.AnalyzeType == "simple" {
-		objName := getdata.UUID + "/" + getdata.RawFile + ".csv"
-		contentType := "application/csv"
-		fPath := UnityServer.GetConfig().FilePath + "/" + getdata.UUID + "/" + getdata.RawFile + ".csv"
-		Minio.UploadFile(objName, fPath, contentType)
-	} else if getdata.AnalyzeType == "funprofiler" {
-		funObjName := getdata.UUID + "/" + getdata.RawFile + "_fun.bin"
-		funrowObjName := getdata.UUID + "/" + getdata.RawFile + "_funrow.bin"
-		renrowObjName := getdata.UUID + "/" + getdata.RawFile + "_renderrow.bin"
-		funhashObjName := getdata.UUID + "/" + getdata.RawFile + "_funhash.bin"
-		funPath := UnityServer.GetConfig().FilePath + "/" + getdata.UUID + "/" + getdata.RawFile + "_fun.bin"
-		funrowPath := UnityServer.GetConfig().FilePath + "/" + getdata.UUID + "/" + getdata.RawFile + "_funrow.bin"
-		renrowPath := UnityServer.GetConfig().FilePath + "/" + getdata.UUID + "/" + getdata.RawFile + "_renderrow.bin"
-		funhashPath := UnityServer.GetConfig().FilePath + "/" + getdata.UUID + "/" + getdata.RawFile + "_funhash.bin"
-		contentType := "application/bin"
-		Minio.UploadFile(funObjName, funPath, contentType)
-		Minio.UploadFile(funrowObjName, funrowPath, contentType)
-		Minio.UploadFile(renrowObjName, renrowPath, contentType)
-		Minio.UploadFile(funhashObjName, funhashPath, contentType)
-	} else {
-		//todo:deep
+	var currentAnalyzePath strings.Builder
+	var objectName strings.Builder
+	currentAnalyzePath.WriteString(UnityServer.GetConfig().FilePath)
+	currentAnalyzePath.WriteString("/")
+	currentAnalyzePath.WriteString(getdata.UUID)
+	currentAnalyzePath.WriteString("/")
+	currentAnalyzePath.WriteString(strings.Split(getdata.RawFile, ".")[0])
+	//压缩
+	destinaFile := currentAnalyzePath.String() + ".zip"
+	err := CompressFolder(currentAnalyzePath.String(), destinaFile)
+	if err != nil {
+		Logs.Loggers().Print("Compress result file failed----")
+		return
 	}
+	objectName.WriteString(getdata.UUID)
+	objectName.WriteString("/")
+	objectName.WriteString(strings.Split(getdata.RawFile, ".")[0])
+	objectName.WriteString(".zip")
+	contentType := "application/zip"
+	Minio.UploadFile(objectName.String(), destinaFile, contentType)
 	uploadMutex.Unlock()
+}
+
+//压缩文件夹
+func CompressFolder(sourceFolder, targetFile string) error {
+	zipFile, err := os.Create(targetFile)
+	if err != nil {
+		return err
+	}
+	defer zipFile.Close()
+
+	zipWriter := zip.NewWriter(zipFile)
+	defer zipWriter.Close()
+
+	err = filepath.Walk(sourceFolder, func(filePath string, fileInfo os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !fileInfo.IsDir() {
+			file, err := os.Open(filePath)
+			if err != nil {
+				return err
+			}
+			defer file.Close()
+
+			relPath, err := filepath.Rel(sourceFolder, filePath)
+			if err != nil {
+				return err
+			}
+
+			zipEntry, err := zipWriter.Create(relPath)
+			if err != nil {
+				return err
+			}
+
+			_, err = io.Copy(zipEntry, file)
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
