@@ -35,6 +35,7 @@ type Config struct {
 	UnityProjectPath []UnityProject
 	MinioServerPath  string
 	MinioBucket      string
+	MinioRawBucket   string
 	MasterServerUrl  ServerConfig
 	ClientUrl        ServerConfig
 }

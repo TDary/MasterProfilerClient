@@ -33,7 +33,7 @@ func InitClient() string {
 	//启动检测解析器状态功能
 	go TaskTransfer()
 	//初始化Minio服务
-	Minio.InitMinio(config.MinioServerPath, config.MinioBucket)
+	Minio.InitMinio(config.MinioServerPath, config.MinioBucket, config.MinioRawBucket)
 	address := config.ClientUrl.Ip + ":" + config.ClientUrl.Port
 	return address
 }

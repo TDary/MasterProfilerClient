@@ -7,9 +7,10 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
-func InitMinio(endpoint string, bucket string) {
+func InitMinio(endpoint string, bucket string, rawbucket string) {
 	//endpoint //minio服务器url
 	BucketName = bucket
+	RawBucketName = rawbucket
 	accessKeyID := "cdr"
 	secretAccessKey := "cdrmm666!@#"
 	useSSL := false

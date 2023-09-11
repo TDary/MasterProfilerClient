@@ -34,6 +34,7 @@
     ],
     "MinioServerPath":"10.11.144.31:8001",
     "MinioBucket":"analyzedata",
+    "MinioRawBucket":"rawdata",
     "MasterServerUrl" :{
         "Ip":"10.11.144.31",
         "Port":"6950"
