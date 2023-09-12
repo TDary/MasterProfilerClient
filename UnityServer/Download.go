@@ -33,7 +33,8 @@ func DownLoadRawFile(getdata AnalyzeData) bool { //todo:字符串拼接优化
 			Logs.Loggers().Print("解压源文件夹失败----")
 			return false
 		}
-		getdata.RawFile = strings.Split(rawdata, "/")[1]
+		splitdata := strings.Split(rawdata, "/")
+		getdata.RawFile = splitdata[len(splitdata)-1]
 		return true
 	} else {
 		createPath := config.FilePath + "/" + getdata.UUID
@@ -50,7 +51,8 @@ func DownLoadRawFile(getdata AnalyzeData) bool { //todo:字符串拼接优化
 				Logs.Loggers().Print("解压源文件夹失败----")
 				return false
 			}
-			getdata.RawFile = strings.Split(rawdata, "/")[1]
+			splitData := strings.Split(rawdata, "/")
+			getdata.RawFile = splitData[len(splitData)-1]
 			return true
 		}
 	}
