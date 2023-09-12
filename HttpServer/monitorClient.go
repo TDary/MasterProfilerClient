@@ -78,11 +78,11 @@ func RequestAnalyzeState(w http.ResponseWriter, r *http.Request) {
 	resMes := DealReceivedMessage(RequestUrlData)
 	if resMes == 200 {
 		var res strings.Builder
-		res.WriteString("{'code':200,'msg':'")
+		res.WriteString("{'code':200,'state':'")
 		res.WriteString(UnityServer.GetAnalyzeProjState().State)
-		res.WriteString(",")
+		res.WriteString("','num':")
 		res.WriteString(strconv.Itoa(UnityServer.GetIdleAnalyzer()))
-		res.WriteString("'}")
+		res.WriteString("}")
 		resData = res.String()
 	} else {
 		resData = "Request Fail"
