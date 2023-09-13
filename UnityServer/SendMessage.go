@@ -45,7 +45,7 @@ func SendFailMessage(rawfile string, uuid string) {
 //发送成功解析的消息
 func GetSucessData(rawfile string, uuid string) {
 	request_Url := "http://" + config.MasterServerUrl.Ip + ":" + config.MasterServerUrl.Port +
-		"/SuccessProfiler" + "?" + "uuid=" + uuid + "&rawfile=" + rawfile + "&ip=" + config.ClientUrl.Ip
+		"/successprofiler" + "?" + "uuid=" + uuid + "&rawfile=" + rawfile + "&ip=" + config.ClientUrl.Ip
 	//超时时间：5秒
 	client := &http.Client{Timeout: 5 * time.Second}
 	resp, err := client.Get(request_Url)

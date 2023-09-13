@@ -135,7 +135,7 @@ func TaskTransfer() {
 }
 
 //解压zip文件
-func ExtractZip(zipFile, targetFolder string) (string, error) {
+func ExtractZip(zipFile string, targetFolder string) (string, error) {
 	reader, err := zip.OpenReader(zipFile)
 	if err != nil {
 		return "", err

@@ -21,6 +21,11 @@ func InitClient() string {
 	if err != nil {
 		Logs.Loggers().Fatal(err)
 	}
+	_, err = os.Stat(config.FilePath)
+	if err != nil {
+		Logs.Loggers().Printf("当前文件夹%s不存在，重新创建中！", config.FilePath)
+		os.Mkdir(config.FilePath, 0755)
+	}
 	Logs.Loggers().Print("初始化解析客户端配置成功----")
 	//启动客户端解析需要请求一次master服务器
 	SendStartMess()
