@@ -11,7 +11,6 @@ import (
 )
 
 func ListenAndServer(address string) {
-	http.HandleFunc("/analyze", RequestProfiler)
 	http.HandleFunc("/stop", SuccessAnalyze)
 	http.HandleFunc("/manastate", RequestAnalyzeState)
 	//Http监听函数
@@ -20,15 +19,10 @@ func ListenAndServer(address string) {
 
 //Http请求处理模块
 func DealReceivedMessage(msg string) int {
-	if strings.Contains(msg, "analyze") {
-		BeginMsg := strings.Split(msg, "?")[1]
-		go ParseServer.GetAnalyzeMes(BeginMsg)
-		Logs.Loggers().Print("接收到解析任务的消息----")
-		return 200
-	} else if strings.Contains(msg, "stop") {
+	if strings.Contains(msg, "stop") {
 		SuccessMsg := strings.Split(msg, "?")[1]
 		go ParseServer.AnalyzeSuccess(SuccessMsg)
-		Logs.Loggers().Print("接收到解析完毕的消息----")
+		Logs.Loggers().Print("接收到解析完毕的消息----", msg)
 		return 200
 	} else if strings.Contains(msg, "manastate") {
 		StMsg := strings.Split(msg, "?")[1]
@@ -47,7 +41,7 @@ func RequestProfiler(w http.ResponseWriter, r *http.Request) {
 	RequestUrlData := r.URL.String()
 	resMes := DealReceivedMessage(RequestUrlData)
 	if resMes == 200 {
-		resData = "{'code':200,'msg':'ok'}"
+		resData = `{"code":200,"msg":"ok"}`
 	} else {
 		resData = "Request Fail"
 	}
@@ -62,7 +56,7 @@ func SuccessAnalyze(w http.ResponseWriter, r *http.Request) {
 	RequestUrlData := r.URL.String()
 	resMes := DealReceivedMessage(RequestUrlData)
 	if resMes == 200 {
-		resData = "{'code':200,'msg':'ok receive'}"
+		resData = `{"code":200,"msg":"ok receive"}`
 	} else {
 		resData = "Request Fail"
 	}
@@ -78,9 +72,9 @@ func RequestAnalyzeState(w http.ResponseWriter, r *http.Request) {
 	resMes := DealReceivedMessage(RequestUrlData)
 	if resMes == 200 {
 		var res strings.Builder
-		res.WriteString("{'code':200,'state':'")
+		res.WriteString(`{"code":200,"state":"`)
 		res.WriteString(UnityServer.GetAnalyzeProjState().State)
-		res.WriteString("','num':")
+		res.WriteString(`","num":`)
 		res.WriteString(strconv.Itoa(UnityServer.GetIdleAnalyzer()))
 		res.WriteString("}")
 		resData = res.String()

@@ -3,6 +3,7 @@ package UnityServer
 import (
 	"MasterClient/Logs"
 	"MasterClient/Minio"
+	"MasterClient/RabbitMqServer"
 	"encoding/json"
 	"io/ioutil"
 	"os"
@@ -21,14 +22,23 @@ func InitClient() string {
 	if err != nil {
 		Logs.Loggers().Fatal(err)
 	}
+
 	_, err = os.Stat(config.FilePath)
 	if err != nil {
 		Logs.Loggers().Printf("当前文件夹%s不存在，重新创建中！", config.FilePath)
 		os.Mkdir(config.FilePath, 0755)
 	}
+	for {
+		taskPath := "./AnalyTask/SuccessSendQue"
+		taskdata := RabbitMqServer.GetData(taskPath) //获取一下看看有没有解析成功但没有发送出去的任务
+		if taskdata == "" {
+			break //空队列
+		} else {
+			SendMessage(taskdata)
+		}
+	}
+
 	Logs.Loggers().Print("初始化解析客户端配置成功----")
-	//启动客户端解析需要请求一次master服务器
-	SendStartMess()
 	//为了避免死机重启后有任务还在运行卡流程，加入一个启动服务器检测的功能
 	CheckCaseState()
 	//检查Unity工程是否存在等

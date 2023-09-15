@@ -10,7 +10,6 @@ import (
 
 func DownLoadRawFile(getdata AnalyzeData) bool { //todo:字符串拼接优化
 	var filePath strings.Builder
-	var srcPath strings.Builder
 	//——————————————————————————————————filePath
 	filePath.WriteString(config.FilePath)
 	filePath.WriteString("/")
@@ -18,17 +17,11 @@ func DownLoadRawFile(getdata AnalyzeData) bool { //todo:字符串拼接优化
 	filePath.WriteString("/")
 	filePath.WriteString(getdata.RawFile)
 	//——————————————————————————————————srcPath
-	srcPath.WriteString(config.FilePath)
-	srcPath.WriteString("/")
-	srcPath.WriteString(getdata.UUID)
-	srcPath.WriteString("/")
-	srcPath.WriteString(getdata.RawFile)
-	srcPath.WriteString("_rawdata.zip")
 	createPath := config.FilePath + "/" + getdata.UUID
 	var isExit, _ = ioutil.ReadFile(filePath.String())
 	if isExit != nil {
 		Logs.Loggers().Print("已存在源文件:" + getdata.RawFile)
-		rawdata, err := ExtractZip(srcPath.String(), createPath)
+		rawdata, err := ExtractZip(filePath.String(), createPath)
 		if err != nil {
 			Logs.Loggers().Print("解压源文件夹失败----")
 			return false
@@ -37,16 +30,16 @@ func DownLoadRawFile(getdata AnalyzeData) bool { //todo:字符串拼接优化
 		getdata.RawFile = splitdata[len(splitdata)-1]
 		return true
 	} else {
-		createPath := config.FilePath + "/" + getdata.UUID
 		_, err := os.Stat(createPath)
 		if err != nil {
 			Logs.Loggers().Print("当前文件夹不存在：" + createPath)
 			Logs.Loggers().Printf("重新创建文件夹%s----\n", createPath)
 			os.Mkdir(createPath, 0755) //创建文件夹
 		}
-		isSuccess := Minio.DownLoadFile(getdata.RawFileName, srcPath.String(), "application/zip")
+		os.Create(filePath.String())
+		isSuccess := Minio.DownLoadFile(getdata.RawFileName, filePath.String(), "application/zip")
 		if isSuccess {
-			rawdata, err := ExtractZip(srcPath.String(), createPath)
+			rawdata, err := ExtractZip(filePath.String(), createPath)
 			if err != nil {
 				Logs.Loggers().Print("解压源文件夹失败----")
 				return false

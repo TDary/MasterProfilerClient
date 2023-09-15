@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 )
@@ -42,6 +43,36 @@ func SendFailMessage(rawfile string, uuid string) {
 	}
 }
 
+//简单发送
+func SendMessage(url string) {
+	//超时时间：5秒
+	client := &http.Client{Timeout: 5 * time.Second}
+	resp, err := client.Get(url)
+	if err != nil {
+		Logs.Loggers().Print(err)
+		return
+	}
+	defer resp.Body.Close()
+	var buffer [512]byte
+	result := bytes.NewBuffer(nil)
+	for {
+		n, err := resp.Body.Read(buffer[0:])
+		result.Write(buffer[0:n])
+		if err != nil && err == io.EOF {
+			break
+		} else if err != nil {
+			Logs.Loggers().Print(err)
+		}
+	}
+	if strings.Contains(result.String(), "ok") {
+		Logs.Loggers().Print("中枢服务器接收到解析成功消息----")
+	} else {
+		Logs.Loggers().Print("中枢服务器未成功接收到消息----")
+		FailSendSuccss(url)
+		return
+	}
+}
+
 //发送成功解析的消息
 func GetSucessData(rawfile string, uuid string) {
 	request_Url := "http://" + config.MasterServerUrl.Ip + ":" + config.MasterServerUrl.Port +
@@ -69,8 +100,19 @@ func GetSucessData(rawfile string, uuid string) {
 		Logs.Loggers().Print("中枢服务器接收到解析成功消息----")
 	} else {
 		Logs.Loggers().Print("中枢服务器未成功接收到消息----")
+		FailSendSuccss(request_Url)
 		return
 	}
+}
+
+//存储发送成功消息失败的队列
+func FailSendSuccss(data string) {
+	filepath := "./AnalyTask"
+	_, err := os.Stat(filepath)
+	if err != nil {
+		os.Mkdir(filepath, 0755)
+	}
+	RabbitMqServer.PutData(filepath+"/SuccessSendQue", data)
 }
 
 //发送重新解析消息
@@ -100,37 +142,6 @@ func SendReProfiler(rawfile string, uuid string) {
 		Logs.Loggers().Print("中枢服务器接收到重新解析消息----")
 	} else {
 		Logs.Loggers().Print("中枢服务器未成功接收到消息----")
-		return
-	}
-}
-
-//发送启动解析器消息，通知master服务器我启动了
-func SendStartMess() {
-	request_Url := "http://" + config.MasterServerUrl.Ip + ":" + config.MasterServerUrl.Port +
-		"/RquestClient" + "?" + "ip=" + config.ClientUrl.Ip
-	//超时时间：5秒
-	client := &http.Client{Timeout: 5 * time.Second}
-	resp, err := client.Get(request_Url)
-	if err != nil {
-		Logs.Loggers().Print("该地址不存在----", err)
-		return
-	}
-	defer resp.Body.Close()
-	var buffer [512]byte
-	result := bytes.NewBuffer(nil)
-	for {
-		n, err := resp.Body.Read(buffer[0:])
-		result.Write(buffer[0:n])
-		if err != nil && err == io.EOF {
-			break
-		} else if err != nil {
-			Logs.Loggers().Print(err)
-		}
-	}
-	if strings.Contains(result.String(), "success") {
-		Logs.Loggers().Print("中枢服务器接收到开启消息----", result.String())
-	} else {
-		Logs.Loggers().Print("中枢服务器未成功接收到消息----", result.String())
 		return
 	}
 }

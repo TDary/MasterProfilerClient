@@ -35,6 +35,7 @@ func GetAnalyzeMes(data string) {
 
 //检测队列中的解析任务并拿出来进行解析
 func AnalyzeRangeCheck() {
+	go InitSocketClient() //初始化socket
 	taskPath := "./AnalyTask/ParseQue"
 	for {
 		//有空闲的才去分配解析
