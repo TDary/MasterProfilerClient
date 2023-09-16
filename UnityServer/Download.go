@@ -21,13 +21,11 @@ func DownLoadRawFile(getdata AnalyzeData) bool { //todo:字符串拼接优化
 	var isExit, _ = ioutil.ReadFile(filePath.String())
 	if isExit != nil {
 		Logs.Loggers().Print("已存在源文件:" + getdata.RawFile)
-		rawdata, err := ExtractZip(filePath.String(), createPath)
+		err := ExtractZip(filePath.String(), createPath)
 		if err != nil {
 			Logs.Loggers().Print("解压源文件夹失败----")
 			return false
 		}
-		splitdata := strings.Split(rawdata, "/")
-		getdata.RawFile = splitdata[len(splitdata)-1]
 		return true
 	} else {
 		_, err := os.Stat(createPath)
@@ -36,16 +34,13 @@ func DownLoadRawFile(getdata AnalyzeData) bool { //todo:字符串拼接优化
 			Logs.Loggers().Printf("重新创建文件夹%s----\n", createPath)
 			os.Mkdir(createPath, 0755) //创建文件夹
 		}
-		os.Create(filePath.String())
 		isSuccess := Minio.DownLoadFile(getdata.RawFileName, filePath.String(), "application/zip")
 		if isSuccess {
-			rawdata, err := ExtractZip(filePath.String(), createPath)
+			err := ExtractZip(filePath.String(), createPath)
 			if err != nil {
 				Logs.Loggers().Print("解压源文件夹失败----")
 				return false
 			}
-			splitData := strings.Split(rawdata, "/")
-			getdata.RawFile = splitData[len(splitData)-1]
 			return true
 		}
 	}

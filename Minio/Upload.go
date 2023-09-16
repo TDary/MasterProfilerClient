@@ -7,7 +7,7 @@ import (
 	"github.com/minio/minio-go/v7"
 )
 
-func UploadFile(objectName string, filePath string, contentType string) {
+func UploadFile(objectName string, filePath string, contentType string) bool {
 	//location := "us-east-1"
 	ctx := context.Background()
 
@@ -19,7 +19,7 @@ func UploadFile(objectName string, filePath string, contentType string) {
 		err := minioClient.MakeBucket(ctx, BucketName, minio.MakeBucketOptions{Region: "us-east-1", ObjectLocking: true}) //不存在 创建一个
 		if err != nil {
 			Logs.Loggers().Printf("存储桶%s创建失败----%s\n", BucketName, err.Error())
-			return
+			return false
 		}
 	}
 
@@ -32,8 +32,9 @@ func UploadFile(objectName string, filePath string, contentType string) {
 	n, err := minioClient.FPutObject(ctx, BucketName, objectName, filePath, minio.PutObjectOptions{ContentType: contentType})
 	if err != nil {
 		Logs.Loggers().Print(err)
-		return
+		return false
 	}
 
 	Logs.Loggers().Printf("上传%s至MInio成功,大小%d----\n", objectName, n.Size)
+	return true
 }

@@ -62,6 +62,9 @@ func Analyze(data string) {
 	getdata = ParseData(data, getdata) //解析传入的数据
 	successDownLoad := UnityServer.DownLoadRawFile(getdata)
 	if successDownLoad {
+		if strings.Contains(getdata.RawFile, ".zip") {
+			getdata.RawFile = strings.Split(getdata.RawFile, ".")[0] + ".raw"
+		}
 		if getdata.AnalyzeType == "simple" {
 			projectID := UnityServer.StartAnalyzeForCsvProfiler(getdata, project, num)
 			CheckProcessState(getdata, projectID) //监控解析进程
@@ -78,6 +81,17 @@ func Analyze(data string) {
 	}
 }
 
+//发送成功解析的消息
+func SendSucessDataToMaster(rawfile string, uuid string) { //successprofiler
+	request_Url := "successprofiler" + "?" + "uuid=" + uuid + "&rawfile=" + rawfile + "&ip=" + UnityServer.GetConfig().ClientUrl.Ip
+	n, err := GetConn().Write([]byte(request_Url))
+	if err != nil {
+		Logs.Loggers().Print("Send Failed.")
+	} else {
+		Logs.Loggers().Print("Send Size：", n)
+	}
+}
+
 //循环检测进程
 func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
 	getdata.AnalyzeNum = id //把工程id赋值
@@ -91,7 +105,7 @@ func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
 			UnityServer.SuccessAnalyze(getdata)
 			UploadSuccessedData(getdata)
 			//完成解析消息回传发送
-			UnityServer.GetSucessData(getdata.RawFile, getdata.UUID)
+			SendSucessDataToMaster(getdata.RawFile, getdata.UUID)
 			break
 		} else if state == "failed" {
 			Logs.Loggers().Print("UUID:" + getdata.UUID + ",rawFile:" + getdata.RawFile + "解析失败----")
@@ -146,7 +160,7 @@ func ParseData(data string, gdata UnityServer.AnalyzeData) UnityServer.AnalyzeDa
 		} else if strings.Contains(current[i], "rawfile") {
 			cdata := strings.Split(current[i], "=")
 			gdata.RawFile = cdata[1]
-		} else if strings.Contains(current[i], "rawfilename") {
+		} else if strings.Contains(current[i], "objectname") {
 			cdata := strings.Split(current[i], "=")
 			gdata.RawFileName = cdata[1]
 		} else if strings.Contains(current[i], "unityversion") {
@@ -207,7 +221,12 @@ func UploadSuccessedData(getdata UnityServer.AnalyzeData) {
 	objectName.WriteString(strings.Split(getdata.RawFile, ".")[0])
 	objectName.WriteString(".zip")
 	contentType := "application/zip"
-	Minio.UploadFile(objectName.String(), destinaFile, contentType)
+	issuccess := Minio.UploadFile(objectName.String(), destinaFile, contentType)
+	if issuccess {
+		Logs.Loggers().Print("Upload Successful.")
+	} else {
+		Logs.Loggers().Print("Upload Failed.")
+	}
 	uploadMutex.Unlock()
 }
 

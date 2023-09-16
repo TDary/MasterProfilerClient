@@ -20,7 +20,7 @@ func InitSocketClient() {
 	}
 	Logs.Loggers().Print("Connect Master successful!")
 	// 发送消息到服务器
-	message := "Hello, server!"
+	message := "markeid?anaclient"
 	_, err = conn.Write([]byte(message))
 	if err != nil {
 		Logs.Loggers().Printf("Error sending message to server: %s", err.Error())
@@ -28,7 +28,7 @@ func InitSocketClient() {
 	}
 	for {
 		// 接收从服务器返回的消息
-		buffer := make([]byte, 1024)
+		buffer := make([]byte, 2048)
 		n, err := conn.Read(buffer)
 		if err != nil {
 			Logs.Loggers().Printf("Error receiving message from server: %s", err.Error())
