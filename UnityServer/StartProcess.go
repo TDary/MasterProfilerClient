@@ -10,6 +10,7 @@ import (
 
 //启动csv解析进程
 func StartAnalyzeForCsvProfiler(data AnalyzeData, analyzeProject string, num int) int {
+	rawFile := strings.Split(data.RawFile, ".")[0] + ".raw"
 	var rawPath strings.Builder
 	var analyzePath string
 	var logPath strings.Builder
@@ -19,7 +20,7 @@ func StartAnalyzeForCsvProfiler(data AnalyzeData, analyzeProject string, num int
 	rawPath.WriteString("/")
 	rawPath.WriteString(data.UUID)
 	rawPath.WriteString("/")
-	rawPath.WriteString(data.RawFile)
+	rawPath.WriteString(rawFile)
 	analyzePath = strings.Split(rawPath.String(), ".")[0]
 	_, err := os.Stat(analyzePath)
 	if err != nil {
@@ -31,12 +32,12 @@ func StartAnalyzeForCsvProfiler(data AnalyzeData, analyzeProject string, num int
 	logPath.WriteString("/")
 	logPath.WriteString(data.UUID)
 	logPath.WriteString("/")
-	logPath.WriteString(data.RawFile)
+	logPath.WriteString(rawFile)
 	logPath.WriteString(".log")
 	//————————————————————————————————————csvPath
 	csvPath.WriteString(analyzePath)
 	csvPath.WriteString("/")
-	csvPath.WriteString(data.RawFile)
+	csvPath.WriteString(rawFile)
 	csvPath.WriteString(".csv")
 	analyzeType := data.AnalyzeType
 	//判断unity版本然后进行选取
@@ -71,12 +72,12 @@ func StartAnalyzeForCsvProfiler(data AnalyzeData, analyzeProject string, num int
 	if er != nil { // 运行命令
 		Logs.Loggers().Print(er.Error())
 	}
-	SuccessBegin(data, num)
 	return num
 }
 
 // 启动函数堆栈解析进程
 func StartAnalyzeForFunProfiler(data AnalyzeData, analyzeProject string, num int) int {
+	rawFile := strings.Split(data.RawFile, ".")[0] + ".raw"
 	var rawPath strings.Builder
 	var analyzePath string
 	var logPath strings.Builder
@@ -88,7 +89,7 @@ func StartAnalyzeForFunProfiler(data AnalyzeData, analyzeProject string, num int
 	rawPath.WriteString("/")
 	rawPath.WriteString(data.UUID)
 	rawPath.WriteString("/")
-	rawPath.WriteString(data.RawFile)
+	rawPath.WriteString(rawFile)
 	analyzePath = strings.Split(rawPath.String(), ".")[0]
 	_, err := os.Stat(analyzePath)
 	if err != nil {
@@ -100,17 +101,17 @@ func StartAnalyzeForFunProfiler(data AnalyzeData, analyzeProject string, num int
 	logPath.WriteString("/")
 	logPath.WriteString(data.UUID)
 	logPath.WriteString("/")
-	logPath.WriteString(data.RawFile)
+	logPath.WriteString(rawFile)
 	logPath.WriteString(".log")
 	//————————————————————————————————————funPath
 	funPath.WriteString(analyzePath)
 	funPath.WriteString("/")
-	funPath.WriteString(data.RawFile)
+	funPath.WriteString(rawFile)
 	funPath.WriteString("_fun.bin")
 	//————————————————————————————————————funRowPath
 	funRowPath.WriteString(analyzePath)
 	funRowPath.WriteString("/")
-	funRowPath.WriteString(data.RawFile)
+	funRowPath.WriteString(rawFile)
 	funRowPath.WriteString("_funrow.bin")
 	//————————————————————————————————————funrenrowPath
 	// renderRowPath.WriteString(analyzePath)
@@ -157,7 +158,6 @@ func StartAnalyzeForFunProfiler(data AnalyzeData, analyzeProject string, num int
 	if er != nil { // 运行命令
 		Logs.Loggers().Print(er.Error())
 	}
-	SuccessBegin(data, num)
 	return num
 }
 

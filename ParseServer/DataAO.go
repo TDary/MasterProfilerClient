@@ -6,5 +6,4 @@ import (
 )
 
 var analyzeData []UnityServer.AnalyzeState
-var logicMutex sync.Mutex
 var uploadMutex sync.Mutex

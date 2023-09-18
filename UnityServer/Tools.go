@@ -1,14 +1,12 @@
 package UnityServer
 
 import (
-	"MasterClient/Logs"
 	"MasterClient/RabbitMqServer"
 	"archive/zip"
 	"encoding/gob"
 	"io"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -21,38 +19,6 @@ func CheckUnityVersion(data AnalyzeData) string {
 		}
 	}
 	return ""
-}
-
-// 成功启动的话将进行写入进行中队列，独特的队列
-func SuccessBegin(data AnalyzeData, num int) {
-	data.AnalyzeNum = num
-	filepath := "./analyzing"
-	_, err := os.Stat(filepath)
-	if err != nil {
-		os.Mkdir(filepath, 0755)
-	}
-	currentNum := strconv.Itoa(num)
-	writeFile := filepath + "/" + currentNum + ".gob"
-	err = writeGob(writeFile, data)
-	if err != nil {
-		Logs.Loggers().Println(err)
-	}
-}
-
-// 解析完毕的话去除文件中进行的
-func SuccessAnalyze(data AnalyzeData) {
-	removeLock.TryLock()
-	var getdata AnalyzeData
-	currentNum := strconv.Itoa(data.AnalyzeNum)
-	getFile := "./analyzing" + "/" + currentNum + ".gob"
-	err := readGob(getFile, &getdata)
-	if err != nil {
-		Logs.Loggers().Print(err)
-	}
-	if data.UUID == getdata.UUID && data.RawFile == getdata.RawFile && data.AnalyzeType == getdata.AnalyzeType {
-		os.Remove(getFile)
-	}
-	removeLock.Unlock()
 }
 
 //序列化写入文件

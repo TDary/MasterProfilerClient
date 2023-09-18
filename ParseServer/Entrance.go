@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-//获取解析成功的数据
+//存入解析成功的数据
 func AnalyzeSuccess(data string) {
 	ParseSuccessData(data)
 }
@@ -57,14 +57,12 @@ func AnalyzeRangeCheck() {
 // 开始启动解析进程
 func Analyze(data string) {
 	Logs.Loggers().Print("开始解析任务----")
+	RelaesePool()
 	var getdata UnityServer.AnalyzeData
 	project, num := UnityServer.GetUnityProject()
 	getdata = ParseData(data, getdata) //解析传入的数据
 	successDownLoad := UnityServer.DownLoadRawFile(getdata)
 	if successDownLoad {
-		if strings.Contains(getdata.RawFile, ".zip") {
-			getdata.RawFile = strings.Split(getdata.RawFile, ".")[0] + ".raw"
-		}
 		if getdata.AnalyzeType == "simple" {
 			projectID := UnityServer.StartAnalyzeForCsvProfiler(getdata, project, num)
 			CheckProcessState(getdata, projectID) //监控解析进程
@@ -92,9 +90,23 @@ func SendSucessDataToMaster(rawfile string, uuid string) { //successprofiler
 	}
 }
 
+//发送解析失败的消息
+func SendFailDataToMaster(rawfile string, uuid string) {
+	request_Url := "failledprofiler" + "?" + "uuid=" + uuid + "&rawfile=" + rawfile + "&ip=" + UnityServer.GetConfig().ClientUrl.Ip
+	n, err := GetConn().Write([]byte(request_Url))
+	if err != nil {
+		Logs.Loggers().Print("Send Failed.")
+	} else {
+		Logs.Loggers().Print("Send Size：", n)
+	}
+}
+
 //循环检测进程
 func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
 	getdata.AnalyzeNum = id //把工程id赋值
+	if strings.Contains(getdata.RawFile, ".zip") {
+		getdata.RawFile = strings.Split(getdata.RawFile, ".")[0] + ".raw"
+	}
 	var count int
 	for {
 		time.Sleep(5 * time.Second)
@@ -102,7 +114,6 @@ func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
 		if state == "success" {
 			Logs.Loggers().Print("UUID:" + getdata.UUID + ",rawFile:" + getdata.RawFile + "解析成功----")
 			UnityServer.RleaseUnityProject(id)
-			UnityServer.SuccessAnalyze(getdata)
 			UploadSuccessedData(getdata)
 			//完成解析消息回传发送
 			SendSucessDataToMaster(getdata.RawFile, getdata.UUID)
@@ -110,19 +121,16 @@ func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
 		} else if state == "failed" {
 			Logs.Loggers().Print("UUID:" + getdata.UUID + ",rawFile:" + getdata.RawFile + "解析失败----")
 			UnityServer.RleaseUnityProject(id)
-			UnityServer.SuccessAnalyze(getdata)
-			UploadSuccessedData(getdata)
 			//解析失败消息上报
-			UnityServer.SendFailMessage(getdata.RawFile, getdata.UUID)
+			SendFailDataToMaster(getdata.RawFile, getdata.UUID)
 			break
 		} else {
 			//超过一定的等待时间即代表着已经解析出问题了
-			if count >= 24 {
+			if count >= 60 {
 				//释放unity解析池组
 				UnityServer.RleaseUnityProject(id)
-				UnityServer.SuccessAnalyze(getdata)
 				//解析失败消息上报
-				UnityServer.SendFailMessage(getdata.RawFile, getdata.UUID)
+				SendFailDataToMaster(getdata.RawFile, getdata.UUID)
 				break
 			}
 		}
@@ -130,23 +138,24 @@ func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
 	}
 }
 
+//释放解析进程池
+func RelaesePool() {
+	if UnityServer.GetIdleAnalyzer() == 4 {
+		analyzeData = nil
+	}
+}
+
 //检查解析完毕的数组是否有对应的
 func CheckAnalyzeState(getdata UnityServer.AnalyzeData) string {
-	logicMutex.TryLock()
 	for i := 0; i < len(analyzeData); i++ {
 		if analyzeData[i].RawFile == getdata.RawFile && analyzeData[i].UUID == getdata.UUID &&
 			analyzeData[i].AnalyzeType == getdata.AnalyzeType && analyzeData[i].State == "success" {
-			analyzeData = append(analyzeData[:i], analyzeData[i+1:]...)
-			logicMutex.Unlock()
 			return "success"
 		} else if analyzeData[i].RawFile == getdata.RawFile && analyzeData[i].UUID == getdata.UUID &&
 			analyzeData[i].AnalyzeType == getdata.AnalyzeType && analyzeData[i].State == "failed" {
-			analyzeData = append(analyzeData[:i], analyzeData[i+1:]...)
-			logicMutex.Unlock()
 			return "failed"
 		}
 	}
-	logicMutex.Unlock()
 	return "wait"
 }
 
@@ -169,7 +178,7 @@ func ParseData(data string, gdata UnityServer.AnalyzeData) UnityServer.AnalyzeDa
 		} else if strings.Contains(current[i], "analyzebucket") {
 			cdata := strings.Split(current[i], "=")
 			gdata.AnalyzeBucket = cdata[1]
-		} else if strings.Contains(current[i], "analyzeType") {
+		} else if strings.Contains(current[i], "analyzetype") {
 			cdata := strings.Split(current[i], "=")
 			gdata.AnalyzeType = cdata[1]
 		}
@@ -178,7 +187,7 @@ func ParseData(data string, gdata UnityServer.AnalyzeData) UnityServer.AnalyzeDa
 }
 
 //将回传的成功http消息进行处理
-func ParseSuccessData(data string) {
+func ParseSuccessData(data string) { //uuid=091826&rawfile=1695035726.raw&anaType=simple&state=success
 	var gdata UnityServer.AnalyzeState
 	current := strings.Split(data, "&")
 	for i := 0; i < len(current); i++ {
