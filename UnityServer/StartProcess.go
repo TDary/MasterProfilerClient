@@ -83,6 +83,7 @@ func StartAnalyzeForFunProfiler(data AnalyzeData, analyzeProject string, num int
 	var logPath strings.Builder
 	var funPath strings.Builder
 	var funRowPath strings.Builder
+	var funNamePath strings.Builder
 	//var renderRowPath strings.Builder
 	//——————————————————————————————————————rawPath
 	rawPath.WriteString(config.FilePath)
@@ -113,6 +114,11 @@ func StartAnalyzeForFunProfiler(data AnalyzeData, analyzeProject string, num int
 	funRowPath.WriteString("/")
 	funRowPath.WriteString(rawFile)
 	funRowPath.WriteString("_funrow.bin")
+	//————————————————————————————————————funnamePath
+	funNamePath.WriteString(analyzePath)
+	funNamePath.WriteString("/")
+	funNamePath.WriteString(rawFile)
+	funNamePath.WriteString("_funname.bin")
 	//————————————————————————————————————funrenrowPath
 	// renderRowPath.WriteString(analyzePath)
 	// renderRowPath.WriteString("/")
@@ -140,6 +146,8 @@ func StartAnalyzeForFunProfiler(data AnalyzeData, analyzeProject string, num int
 	Startargs.WriteString(funPath.String())
 	Startargs.WriteString(" -funrowPath ")
 	Startargs.WriteString(funRowPath.String())
+	Startargs.WriteString(" -funnamePath ")
+	Startargs.WriteString(funNamePath.String())
 	// Startargs.WriteString(" -funrenderrowPath ")
 	// Startargs.WriteString(renderRowPath.String())
 	Startargs.WriteString(" -analyzeType ")
