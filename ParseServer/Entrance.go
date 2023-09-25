@@ -211,7 +211,6 @@ func ParseSuccessData(data string) { //uuid=091826&rawfile=1695035726.raw&anaTyp
 
 //上传解析完成的文件
 func UploadSuccessedData(getdata UnityServer.AnalyzeData) {
-	uploadMutex.TryLock()
 	var currentAnalyzePath strings.Builder
 	var objectName strings.Builder
 	currentAnalyzePath.WriteString(UnityServer.GetConfig().FilePath)
@@ -237,7 +236,6 @@ func UploadSuccessedData(getdata UnityServer.AnalyzeData) {
 	} else {
 		Logs.Loggers().Print("Upload Failed.")
 	}
-	uploadMutex.Unlock()
 }
 
 //压缩文件夹
