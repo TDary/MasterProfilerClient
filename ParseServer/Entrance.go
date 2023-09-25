@@ -127,6 +127,7 @@ func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
 		} else {
 			//超过一定的等待时间即代表着已经解析出问题了
 			if count >= 60 {
+				Logs.Loggers().Print("UUID:" + getdata.UUID + ",rawFile:" + getdata.RawFile + "解析失败----")
 				//释放unity解析池组
 				UnityServer.RleaseUnityProject(id)
 				//解析失败消息上报
