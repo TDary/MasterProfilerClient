@@ -65,11 +65,11 @@ func Analyze(data string) {
 	if successDownLoad {
 		if getdata.AnalyzeType == "simple" {
 			projectID := UnityServer.StartAnalyzeForCsvProfiler(getdata, project, num)
-			CheckProcessState(getdata, projectID) //监控解析进程
+			CheckProcessState(getdata, projectID, data) //监控解析进程
 			Logs.Loggers().Print("解析流程完毕----")
 		} else if getdata.AnalyzeType == "funprofiler" {
 			projectID := UnityServer.StartAnalyzeForFunProfiler(getdata, project, num)
-			CheckProcessState(getdata, projectID) //监控解析进程
+			CheckProcessState(getdata, projectID, data) //监控解析进程
 			Logs.Loggers().Print("解析流程完毕----")
 		} else {
 			//deep  暂时不解析
@@ -81,7 +81,7 @@ func Analyze(data string) {
 
 //发送成功解析的消息
 func SendSucessDataToMaster(rawfile string, uuid string) { //successprofiler
-	request_Url := "successprofiler" + "?" + "uuid=" + uuid + "&rawfile=" + rawfile + "&ip=" + UnityServer.GetConfig().ClientUrl.Ip
+	request_Url := "successprofiler?uuid=" + uuid + "&rawfile=" + rawfile + "&ip=" + UnityServer.GetConfig().ClientUrl.Ip
 	n, err := GetConn().Write([]byte(request_Url))
 	if err != nil {
 		Logs.Loggers().Print("Send Failed.")
@@ -91,8 +91,9 @@ func SendSucessDataToMaster(rawfile string, uuid string) { //successprofiler
 }
 
 //发送解析失败的消息
-func SendFailDataToMaster(rawfile string, uuid string) {
-	request_Url := "failledprofiler" + "?" + "uuid=" + uuid + "&rawfile=" + rawfile + "&ip=" + UnityServer.GetConfig().ClientUrl.Ip
+func SendFailDataToMaster(urlData string) {
+	splitdata := strings.Split(urlData, "?")[1]
+	request_Url := "failledprofiler?" + splitdata
 	n, err := GetConn().Write([]byte(request_Url))
 	if err != nil {
 		Logs.Loggers().Print("Send Failed.")
@@ -102,7 +103,7 @@ func SendFailDataToMaster(rawfile string, uuid string) {
 }
 
 //循环检测进程
-func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
+func CheckProcessState(getdata UnityServer.AnalyzeData, id int, originData string) {
 	getdata.AnalyzeNum = id //把工程id赋值
 	if strings.Contains(getdata.RawFile, ".zip") {
 		getdata.RawFile = strings.Split(getdata.RawFile, ".")[0] + ".raw"
@@ -122,7 +123,7 @@ func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
 			Logs.Loggers().Print("UUID:" + getdata.UUID + ",rawFile:" + getdata.RawFile + "解析失败----")
 			UnityServer.RleaseUnityProject(id)
 			//解析失败消息上报
-			SendFailDataToMaster(getdata.RawFile, getdata.UUID)
+			SendFailDataToMaster(originData)
 			break
 		} else {
 			//超过一定的等待时间即代表着已经解析出问题了
@@ -131,7 +132,7 @@ func CheckProcessState(getdata UnityServer.AnalyzeData, id int) {
 				//释放unity解析池组
 				UnityServer.RleaseUnityProject(id)
 				//解析失败消息上报
-				SendFailDataToMaster(getdata.RawFile, getdata.UUID)
+				SendFailDataToMaster(originData)
 				break
 			}
 		}
