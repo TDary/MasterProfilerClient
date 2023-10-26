@@ -81,7 +81,8 @@ func Analyze(data string) {
 
 //发送成功解析的消息
 func SendSucessDataToMaster(rawfile string, uuid string) { //successprofiler
-	request_Url := "successprofiler?uuid=" + uuid + "&rawfile=" + rawfile + "&ip=" + UnityServer.GetConfig().ClientUrl.Ip
+	olrawfile := strings.Replace(rawfile, ".raw", ".zip", 1)
+	request_Url := "successprofiler?uuid=" + uuid + "&rawfile=" + olrawfile + "&ip=" + UnityServer.GetConfig().ClientUrl.Ip
 	n, err := GetConn().Write([]byte(request_Url))
 	if err != nil {
 		Logs.Loggers().Print("Send Failed.")
