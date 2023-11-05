@@ -5,19 +5,18 @@ import (
 	"MasterClient/Minio"
 	"MasterClient/RabbitMqServer"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-//获取配置文件
+// 获取配置文件
 func GetConfig() Config {
 	return config
 }
 
 func InitClient() string {
-	var data, _ = ioutil.ReadFile("./ClientConfig.json")
+	var data, _ = os.ReadFile("./ClientConfig.json")
 	var err = json.Unmarshal(data, &config)
 	if err != nil {
 		Logs.Loggers().Fatal(err)
@@ -48,7 +47,7 @@ func InitClient() string {
 	//启动检测解析器状态功能
 	go TaskTransfer()
 	//初始化Minio服务
-	Minio.InitMinio(config.MinioServerPath, config.MinioBucket, config.MinioRawBucket)
+	Minio.InitMinio(config.Minioconfig.MinioServerPath, config.Minioconfig.MinioBucket, config.Minioconfig.MinioRawBucket, config.Minioconfig.UserName, config.Minioconfig.PassWord)
 	address := config.ClientUrl.Ip + ":" + config.ClientUrl.Port
 	return address
 }
@@ -71,7 +70,7 @@ func CheckCaseState() {
 	})
 }
 
-//检查解析工程
+// 检查解析工程
 func CheckUnityProject() {
 	Logs.Loggers().Print("正在检查Unity解析模板以及Unity程序是否存在----")
 	for i := 0; i < len(config.UnityProjectPath); i++ {

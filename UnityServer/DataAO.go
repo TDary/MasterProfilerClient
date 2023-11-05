@@ -30,13 +30,19 @@ type AnalyzeData struct {
 	AnalyzeType   string
 }
 
+type MinioConfig struct {
+	MinioServerPath string
+	MinioBucket     string
+	MinioRawBucket  string
+	UserName        string
+	PassWord        string
+}
+
 type Config struct {
 	FilePath         string
 	UnityPath        []UnityConfig
 	UnityProjectPath []UnityProject
-	MinioServerPath  string
-	MinioBucket      string
-	MinioRawBucket   string
+	Minioconfig      MinioConfig
 	MasterServerUrl  ServerConfig
 	ClientUrl        ServerConfig
 }

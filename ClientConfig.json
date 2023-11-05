@@ -1,5 +1,5 @@
 {
-    "FilePath":"E:/TestFiles",
+    "FilePath":"D:\\MaterAnlyzePath\\RawData",
     "UnityPath":[
         {
             "Version":"2021.3.1f1",
@@ -36,9 +36,13 @@
             "State" : true
         }
     ],
-    "MinioServerPath":"10.11.144.31:8001",
-    "MinioBucket":"analyzedata",
-    "MinioRawBucket":"rawdata",
+    "Minioconfig":{
+        "MinioServerPath":"10.11.144.31:8001",
+        "MinioBucket":"analyzedata",
+        "MinioRawBucket":"rawdata",
+        "UserName":"cdr",
+        "PassWord":"cdrmm666!@#"
+    },
     "MasterServerUrl" :{
         "Ip":"10.11.144.31",
         "Port":"6950"
