@@ -5,6 +5,7 @@ import (
 	"MasterClient/UnityServer"
 	"net"
 	"strings"
+	"time"
 )
 
 var conn net.Conn
@@ -14,9 +15,12 @@ var err error
 func InitSocketClient() {
 	address := UnityServer.GetConfig().MasterServerUrl.Ip + ":" + UnityServer.GetConfig().MasterServerUrl.Port
 	// 连接到服务器
+connectProcess:
 	conn, err = net.Dial("tcp", address)
 	if err != nil {
-		Logs.Loggers().Fatalf("Failed to connect to server: %s", err.Error())
+		Logs.Loggers().Printf("Failed to connect to server: %s", err.Error())
+		time.Sleep(10 * time.Second) //连接失败的话，每10秒进行不断重连
+		goto connectProcess
 	}
 	Logs.Loggers().Print("Connect Master successful!")
 	// 发送消息到服务器
@@ -32,7 +36,7 @@ func InitSocketClient() {
 		n, err := conn.Read(buffer)
 		if err != nil {
 			Logs.Loggers().Printf("Error receiving message from server: %s", err.Error())
-			return
+			goto connectProcess //断连重新回到连接流程
 		}
 		if len(buffer) != 0 {
 			res := string(buffer[:n])
