@@ -12,6 +12,13 @@ import (
 func CheckDiskToFree() {
 	for {
 		filePath := config.FilePath
+		_, err := os.Stat(filePath)
+		if os.IsNotExist(err) {
+			err := os.MkdirAll(filePath, 0755)
+			if err != nil {
+				Logs.Loggers().Print("创建文件夹时出错：", err)
+			}
+		}
 		usage, err := disk.Usage(filePath)
 		if err != nil {
 			Logs.Loggers().Print("无法获取磁盘信息：", err)
