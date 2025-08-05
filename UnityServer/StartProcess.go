@@ -176,8 +176,8 @@ func StartAnalyzeForFuntimeline(data AnalyzeData, analyzeProject string, num int
 	var analyzePath string
 	var logPath strings.Builder
 	var funPath strings.Builder
+	var funrowPath strings.Builder
 	var funNamePath strings.Builder
-	//var renderRowPath strings.Builder
 	//——————————————————————————————————————rawPath
 	rawPath.WriteString(config.FilePath)
 	rawPath.WriteString("/")
@@ -202,6 +202,11 @@ func StartAnalyzeForFuntimeline(data AnalyzeData, analyzeProject string, num int
 	funPath.WriteString("/")
 	funPath.WriteString(rawFile)
 	funPath.WriteString("_fun.bin")
+	//————————————————————————————————————funrowPath
+	funrowPath.WriteString(analyzePath)
+	funrowPath.WriteString("/")
+	funrowPath.WriteString(rawFile)
+	funrowPath.WriteString("_funrow.bin")
 	//————————————————————————————————————funnamePath
 	funNamePath.WriteString(analyzePath)
 	funNamePath.WriteString("/")
@@ -228,6 +233,7 @@ func StartAnalyzeForFuntimeline(data AnalyzeData, analyzeProject string, num int
 	Startargs.WriteString(" -funPath ")
 	Startargs.WriteString(funPath.String())
 	Startargs.WriteString(" -funrowPath ")
+	Startargs.WriteString(funrowPath.String())
 	Startargs.WriteString(" -funnamePath ")
 	Startargs.WriteString(funNamePath.String())
 	Startargs.WriteString(" -analyzeType ")
@@ -310,7 +316,7 @@ func StartAnalyzeMemorySnap(data AnalyzeData, analyzeProject string, num int) in
 	Startargs.WriteString(" -quit -batchmode -nographics ")
 	Startargs.WriteString("-projectPath ")
 	Startargs.WriteString(analyzeProject)
-	Startargs.WriteString(" -executeMethod Entrance.EntranceParseBegin ")
+	Startargs.WriteString(" -executeMethod Entrance.EntranceParseSnapBegin ")
 	Startargs.WriteString("-logFile ")
 	Startargs.WriteString(logPath.String())
 	Startargs.WriteString(" -snapPath ")
