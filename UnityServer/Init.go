@@ -89,7 +89,7 @@ func CheckUnityProject() {
 	for i := 0; i < len(config.UnityPath); i++ {
 		_, err := os.Stat(config.UnityPath[i].Path)
 		if err != nil {
-			Logs.Loggers().Fatal("当前解析程序不存在：", config.UnityProjectPath[i].Path)
+			Logs.Loggers().Fatal("当前解析程序不存在：", config.UnityPath[i].Path)
 		}
 	}
 	Logs.Loggers().Print("检查完毕，状态完好!!!")
