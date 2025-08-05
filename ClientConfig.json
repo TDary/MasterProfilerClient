@@ -11,44 +11,48 @@
         },
         {
             "Version":"2022.3.2f1",
-            "Path":"H:\\Projects\\Unity\\Unity.exe"
+            "Path":"E:\\Projects\\Unity\\Unity.exe"
+        },
+        {
+            "Version":"2019.4.0f1",
+            "Path":"E:\\Unity\\2019.4.0f1\\Editor\\Unity.exe"
         }
     ],
     "UnityProjectPath":[
         {
-            "Path" : "E:\\ProfilerProject\\Analyze_0",
+            "Path" : "F:\\ProfilerProject\\Analyze_0",
             "Numb":0,
             "State" : true
         },
         {
-            "Path" : "E:\\ProfilerProject\\Analyze_1",
+            "Path" : "F:\\ProfilerProject\\Analyze_1",
             "Numb":1,
             "State" : true
         },
         {
-            "Path" : "E:\\ProfilerProject\\Analyze_2",
+            "Path" : "F:\\ProfilerProject\\Analyze_2",
             "Numb":2,
             "State" : true
         },
         {
-            "Path" : "E:\\ProfilerProject\\Analyze_3",
+            "Path" : "F:\\ProfilerProject\\Analyze_3",
             "Numb":3,
             "State" : true
         }
     ],
     "Minioconfig":{
-        "MinioServerPath":"10.11.144.31:8001",
+        "MinioServerPath":"10.11.145.125:8001",
         "MinioBucket":"analyzedata",
         "MinioRawBucket":"rawdata",
         "UserName":"cdr",
         "PassWord":"cdrmm666!@#"
     },
     "MasterServerUrl" :{
-        "Ip":"10.11.144.31",
+        "Ip":"10.11.145.125",
         "Port":"6950"
     },
     "ClientUrl":{
-        "Ip":"10.11.144.31",
+        "Ip":"10.11.145.125",
         "Port":"7950"
     }
 }

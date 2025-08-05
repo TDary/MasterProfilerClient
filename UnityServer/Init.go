@@ -6,7 +6,6 @@ import (
 	"MasterClient/RabbitMqServer"
 	"MasterClient/Tools"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -18,7 +17,7 @@ func GetConfig() Config {
 }
 
 func InitClient() string {
-	var data, _ = ioutil.ReadFile("./ClientConfig.dat")
+	var data, _ = os.ReadFile("./ClientConfig.dat")
 	key := []byte("eb3386a8a8f57a579c93fdfb33ec9471") // 加密密钥，长度为16, 24, 或 32字节，对应AES-128, AES-192, AES-256
 	decryptedData, err := Tools.Decrypt(data, key)
 	if err != nil {
