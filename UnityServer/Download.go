@@ -3,7 +3,6 @@ package UnityServer
 import (
 	"MasterClient/Logs"
 	"MasterClient/Minio"
-	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -18,7 +17,7 @@ func DownLoadRawFile(getdata AnalyzeData) bool { //todo:字符串拼接优化
 	filePath.WriteString(getdata.RawFile)
 	//——————————————————————————————————srcPath
 	createPath := config.FilePath + "/" + getdata.UUID
-	var isExit, _ = ioutil.ReadFile(filePath.String())
+	var isExit, _ = os.ReadFile(filePath.String())
 	if isExit != nil {
 		Logs.Loggers().Print("已存在源文件:" + getdata.RawFile)
 		err := ExtractZip(filePath.String(), createPath)

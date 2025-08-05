@@ -13,17 +13,17 @@ import (
 	"time"
 )
 
-//存入解析成功的数据
+// 存入解析成功的数据
 func AnalyzeSuccess(data string) {
 	ParseSuccessData(data)
 }
 
-//获取解析器状态请求
+// 获取解析器状态请求
 func RequestMachineState(data string) {
 	Logs.Loggers().Print(data)
 }
 
-//从http消息中获取任务并存入队列中
+// 从http消息中获取任务并存入队列中
 func GetAnalyzeMes(data string) {
 	filepath := "./AnalyTask"
 	_, err := os.Stat(filepath)
@@ -33,7 +33,7 @@ func GetAnalyzeMes(data string) {
 	RabbitMqServer.PutData(filepath+"/ParseQue", data)
 }
 
-//检测队列中的解析任务并拿出来进行解析
+// 检测队列中的解析任务并拿出来进行解析
 func AnalyzeRangeCheck() {
 	go InitSocketClient() //初始化socket
 	taskPath := "./AnalyTask/ParseQue"
@@ -63,23 +63,32 @@ func Analyze(data string) {
 	getdata = ParseData(data, getdata) //解析传入的数据
 	successDownLoad := UnityServer.DownLoadRawFile(getdata)
 	if successDownLoad {
-		if getdata.AnalyzeType == "simple" {
+		switch getdata.AnalyzeType {
+		case "simple":
 			projectID := UnityServer.StartAnalyzeForCsvProfiler(getdata, project, num)
 			CheckProcessState(getdata, projectID, data) //监控解析进程
-			Logs.Loggers().Print("解析流程完毕----")
-		} else if getdata.AnalyzeType == "funprofiler" {
+			Logs.Loggers().Print("解析SimpleData流程完毕----")
+		case "funprofiler":
 			projectID := UnityServer.StartAnalyzeForFunProfiler(getdata, project, num)
 			CheckProcessState(getdata, projectID, data) //监控解析进程
-			Logs.Loggers().Print("解析流程完毕----")
-		} else {
-			//deep  暂时不解析
+			Logs.Loggers().Print("解析FunProfiler流程完毕----")
+		case "funtimeline":
+			projectID := UnityServer.StartAnalyzeForFuntimeline(getdata, project, num)
+			CheckProcessState(getdata, projectID, data) //监控解析进程
+			Logs.Loggers().Print("解析Timelin流程完毕----")
+		case "memorysnap":
+			projectID := UnityServer.StartAnalyzeMemorySnap(getdata, project, num)
+			CheckProcessState(getdata, projectID, data) //监控解析进程
+			Logs.Loggers().Print("解析Timelin流程完毕----")
+		default:
+			//其他 deep  暂时不解析
 		}
 	} else {
 		Logs.Loggers().Print("下载源文件" + getdata.RawFile + "失败----")
 	}
 }
 
-//发送成功解析的消息
+// 发送成功解析的消息
 func SendSucessDataToMaster(rawfile string, uuid string) { //successprofiler
 	olrawfile := strings.Replace(rawfile, ".raw", ".zip", 1)
 	request_Url := "successprofiler?uuid=" + uuid + "&rawfile=" + olrawfile + "&ip=" + UnityServer.GetConfig().ClientUrl.Ip
@@ -91,7 +100,7 @@ func SendSucessDataToMaster(rawfile string, uuid string) { //successprofiler
 	}
 }
 
-//发送解析失败的消息
+// 发送解析失败的消息
 func SendFailDataToMaster(urlData string) {
 	splitdata := strings.Split(urlData, "?")[1]
 	request_Url := "failledprofiler?" + splitdata
@@ -103,7 +112,7 @@ func SendFailDataToMaster(urlData string) {
 	}
 }
 
-//循环检测进程
+// 循环检测进程
 func CheckProcessState(getdata UnityServer.AnalyzeData, id int, originData string) {
 	getdata.AnalyzeNum = id //把工程id赋值
 	if strings.Contains(getdata.RawFile, ".zip") {
@@ -141,14 +150,14 @@ func CheckProcessState(getdata UnityServer.AnalyzeData, id int, originData strin
 	}
 }
 
-//释放解析进程池
+// 释放解析进程池
 func RelaesePool() {
 	if UnityServer.GetIdleAnalyzer() == 4 {
 		analyzeData = nil
 	}
 }
 
-//检查解析完毕的数组是否有对应的
+// 检查解析完毕的数组是否有对应的
 func CheckAnalyzeState(getdata UnityServer.AnalyzeData) string {
 	for i := 0; i < len(analyzeData); i++ {
 		if analyzeData[i].RawFile == getdata.RawFile && analyzeData[i].UUID == getdata.UUID &&
@@ -189,7 +198,7 @@ func ParseData(data string, gdata UnityServer.AnalyzeData) UnityServer.AnalyzeDa
 	return gdata
 }
 
-//将回传的成功http消息进行处理
+// 将回传的成功http消息进行处理
 func ParseSuccessData(data string) { //uuid=091826&rawfile=1695035726.raw&anaType=simple&state=success
 	var gdata UnityServer.AnalyzeState
 	current := strings.Split(data, "&")
@@ -211,7 +220,7 @@ func ParseSuccessData(data string) { //uuid=091826&rawfile=1695035726.raw&anaTyp
 	analyzeData = append(analyzeData, gdata)
 }
 
-//上传解析完成的文件
+// 上传解析完成的文件
 func UploadSuccessedData(getdata UnityServer.AnalyzeData) {
 	var currentAnalyzePath strings.Builder
 	var objectName strings.Builder
@@ -240,7 +249,7 @@ func UploadSuccessedData(getdata UnityServer.AnalyzeData) {
 	}
 }
 
-//压缩文件夹
+// 压缩文件夹
 func CompressFolder(sourceFolder, targetFile string) error {
 	zipFile, err := os.Create(targetFile)
 	if err != nil {
