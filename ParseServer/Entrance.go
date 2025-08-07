@@ -72,10 +72,6 @@ func Analyze(data string) {
 			projectID := UnityServer.StartAnalyzeForFunProfiler(getdata, project, num)
 			CheckProcessState(getdata, projectID, data) //监控解析进程
 			Logs.Loggers().Print("解析FunProfiler流程完毕----")
-		case "funtimeline":
-			projectID := UnityServer.StartAnalyzeForFuntimeline(getdata, project, num)
-			CheckProcessState(getdata, projectID, data) //监控解析进程
-			Logs.Loggers().Print("解析Timelin流程完毕----")
 		case "memorysnap":
 			projectID := UnityServer.StartAnalyzeMemorySnap(getdata, project, num)
 			CheckProcessState(getdata, projectID, data) //监控解析进程
