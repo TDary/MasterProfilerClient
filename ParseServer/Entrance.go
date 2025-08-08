@@ -56,7 +56,7 @@ func AnalyzeRangeCheck() {
 
 // 开始启动解析进程
 func Analyze(data string) {
-	Logs.Loggers().Print("开始解析任务----")
+	Logs.Loggers().Print("开始解析任务----Data:", data)
 	RelaesePool()
 	var getdata UnityServer.AnalyzeData
 	project, num := UnityServer.GetUnityProject()
@@ -98,8 +98,7 @@ func SendSucessDataToMaster(rawfile string, uuid string) { //successprofiler
 
 // 发送解析失败的消息
 func SendFailDataToMaster(urlData string) {
-	splitdata := strings.Split(urlData, "?")[1]
-	request_Url := "failledprofiler?" + splitdata
+	request_Url := "failledprofiler?" + urlData
 	n, err := GetConn().Write([]byte(request_Url))
 	if err != nil {
 		Logs.Loggers().Print("Send Failed.")

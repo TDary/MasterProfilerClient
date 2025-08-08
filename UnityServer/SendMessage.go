@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-//简单发送
+// 简单发送
 func SendMessage(url string) {
 	//超时时间：5秒
 	client := &http.Client{Timeout: 5 * time.Second}
@@ -42,7 +42,7 @@ func SendMessage(url string) {
 	}
 }
 
-//存储发送成功消息失败的队列
+// 存储发送成功消息的队列
 func FailSendSuccss(data string) {
 	filepath := "./AnalyTask"
 	_, err := os.Stat(filepath)
@@ -52,7 +52,7 @@ func FailSendSuccss(data string) {
 	RabbitMqServer.PutData(filepath+"/SuccessSendQue", data)
 }
 
-//发送重新解析消息
+// 发送重新解析消息
 func SendReProfiler(rawfile string, uuid string) {
 	request_Url := "http://" + config.MasterServerUrl.Ip + ":" + config.MasterServerUrl.Port +
 		"/ReAnalyze" + "?" + "uuid=" + uuid + "&rawfile=" + rawfile
@@ -83,7 +83,7 @@ func SendReProfiler(rawfile string, uuid string) {
 	}
 }
 
-//发送请求 去获取空闲的解析器列表
+// 发送请求 去获取空闲的解析器列表
 func SendToGetAnalyzer() []MachineState {
 	request_Url := "http://" + config.MasterServerUrl.Ip + ":" + config.MasterServerUrl.Port +
 		"/requestidles" + "?" + "ip=" + config.ClientUrl.Ip
@@ -117,7 +117,7 @@ func SendToGetAnalyzer() []MachineState {
 	return nil
 }
 
-//发送请求轮转给其他解析器进行解析
+// 发送请求轮转给其他解析器进行解析
 func SendAnalyzeToOther(data string, ip string, taskpath string) {
 	request_Url := "http://" + ip + ":" + config.ClientUrl.Port +
 		"/analyze" + "?" + data
